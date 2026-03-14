@@ -1,0 +1,121 @@
+schema:
+  name: specification-contract
+  version: 0.1.0
+  status: draft
+  description: Canonical contract envelope that every specification must obey.
+
+required_top_level_sections:
+  - meta
+  - authority
+  - purpose
+  - context
+  - contracts
+  - implementation
+  - validation
+  - history
+
+rules:
+  - every_spec_must_have_identity
+  - every_spec_must_define_authority_level
+  - every_spec_must_declare_scope
+  - every_spec_must_declare_implementation_impact
+  - every_spec_must_define_validation_requirements
+  - lower_level_specs_may_refine_but_must_not_contradict_higher_authority_specs
+
+sections:
+  meta:
+    required_fields:
+      - id
+      - title
+      - type
+      - version
+      - status
+      - owner
+      - created_at
+      - updated_at
+    field_rules:
+      id: unique_within_project
+      type: must_be_one_of_supported_spec_types
+      version: semantic_version_recommended
+      status: should_be_one_of_draft_review_approved_deprecated
+
+  authority:
+    required_fields:
+      - level
+      - inherits_from
+      - depends_on
+    field_rules:
+      level: must_reflect_place_in_authority_hierarchy
+      inherits_from: must_reference_higher_or_equal_governing_specs
+      depends_on: must_reference_related_specs_without_implying_authority
+      conflicts_with: optional_but_required_when_known_conflicts_exist
+
+  purpose:
+    required_fields:
+      - summary
+      - problem
+      - scope
+      - non_goals
+
+  context:
+    required_fields:
+      - bounded_context
+      - actors
+      - capabilities
+      - constraints
+
+  contracts:
+    required_fields:
+      - invariants
+      - validations
+    conditional_fields:
+      domain:
+        - entities
+        - commands
+        - queries
+        - events
+      api:
+        - endpoints
+      migration:
+        - migration_steps
+      security:
+        - trust_boundaries
+        - control_requirements
+
+  implementation:
+    required_fields:
+      - targets
+      - affected_paths
+      - generation_mode
+      - migration_strategy
+    field_rules:
+      affected_paths: must_not_be_empty_for_specs_that_drive_code_change
+      migration_strategy: should_default_to_safe_when_state_is_involved
+
+  validation:
+    required_fields:
+      - required_checks
+      - acceptance_criteria
+      - traceability_requirements
+    field_rules:
+      required_checks: must_be_explicit_and_reviewable
+      acceptance_criteria: must_be_testable
+      traceability_requirements: must_link_spec_to_governing_or_affected_artifacts
+
+  history:
+    required_fields:
+      - change_reason
+      - previous_version
+      - approved_by
+
+recommended_authority_hierarchy:
+  - genesis
+  - standard
+  - domain
+  - implementation
+  - task-change
+
+validation_outcomes:
+  compliant: spec satisfies the contract envelope
+  partial: spec exists but is missing one or more required sections or fields
+  invalid: spec contradicts higher-order authority or cannot be resolved safely

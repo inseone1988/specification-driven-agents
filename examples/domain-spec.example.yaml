@@ -1,0 +1,120 @@
+meta:
+  id: device-presence-domain
+  title: Device Presence Domain Contract
+  type: domain
+  version: 0.1.0
+  status: draft
+  owner: architecture
+  created_at: 2026-03-13
+  updated_at: 2026-03-13
+  tags:
+    - devices
+    - presence
+    - event-sourcing
+
+authority:
+  level: domain
+  inherits_from:
+    - genesis
+    - ethos-standards
+  depends_on:
+    - authorization-standard
+    - event-schema-standard
+  supersedes: []
+  conflicts_with: []
+
+purpose:
+  summary: Defines the bounded context for device-generated operational presence evidence.
+  problem: Devices emit operational signals that must be recorded, classified, and reconstructed without trusting client interpretation.
+  scope:
+    includes:
+      - event intake
+      - presence classification
+      - current-state projection
+    excludes:
+      - payroll calculation
+      - billing
+  non_goals:
+    - frontend rendering decisions
+    - geofence hard blocking
+
+context:
+  bounded_context: operational-presence
+  actors:
+    - device
+    - backend
+    - tenant-admin
+  capabilities:
+    - register operational events
+    - classify events server-side
+    - derive current presence state from history
+  constraints:
+    - backend never trusts client interpretation
+    - events are append-only
+    - projections are not source of truth
+
+contracts:
+  entities:
+    - event
+    - current_presence
+    - device
+  commands:
+    - register_device_event
+  queries:
+    - get_current_presence
+    - list_device_events
+  events:
+    - device_event_registered
+    - presence_classified
+  invariants:
+    - all historical truth originates from events
+    - current state must be reconstructable from event history
+    - rejected events require explicit reason
+  validations:
+    - signature validation when present
+    - timestamp window validation
+    - tenant scope validation
+  permissions:
+    - tenant_admin_can_read_presence
+    - device_can_submit_only_its_own_events
+
+implementation:
+  targets:
+    - src/modules/presence
+    - src/api/v1/presence.routes.ts
+    - src/infrastructure/database/schema.ts
+  affected_paths:
+    - src/modules/presence/**
+    - src/api/v1/**
+    - src/infrastructure/database/**
+  generation_mode: guided
+  migration_strategy: safe
+  notes:
+    - avoid direct writes to projections outside event processing flow
+
+validation:
+  required_checks:
+    - references_resolve
+    - no_authority_conflict
+    - events_declared_in_event_standard
+    - affected_paths_declared
+  acceptance_criteria:
+    - device events can be persisted immutably
+    - current presence can be rebuilt from historical events
+    - unauthorized cross-tenant reads are rejected
+  test_requirements:
+    - event_ingestion_integration_test
+    - projection_rebuild_test
+    - tenant_scope_authorization_test
+  traceability_requirements:
+    - link_to_parent_standard_specs
+    - link_to_implementation_targets
+
+history:
+  change_reason: first public example
+  previous_version: null
+  approved_by:
+    - Javier
+    - godinez
+  notes:
+    - example intended to show contract shape, not final production semantics
