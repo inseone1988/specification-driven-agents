@@ -37,6 +37,21 @@ Prefer specs that are:
 3. more current by active status
 4. explicit about affected paths and invariants
 
+## Reference convention
+
+When a specification explicitly references another specification document, prefer `@relative-path` syntax rooted at the spec repository root.
+
+Examples:
+- `@genesis.md`
+- `@standards/global-standards.spec.yaml`
+- `@domains/event-evidence-domain.spec.yaml`
+
+Use this distinction:
+- logical IDs identify the concept or node in the contract graph
+- `@relative-path` identifies the physical document to resolve and read
+
+Agents should treat `@relative-path` references as literal document paths before expanding broader search behavior.
+
 ## When to expand the read set
 
 Expand when:
