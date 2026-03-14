@@ -37,7 +37,10 @@ Every specification should clearly define:
 - `SPEC_AUTHORITY_MODEL.md` — authority, inheritance, and contradiction rules
 - `SPEC_LIFECYCLE.md` — lifecycle states for specifications
 - `SPEC_RESOLUTION_RULES.md` — how humans and agents determine what to read
+- `VERSIONING.md` — semantic versioning policy for the standard and specs
+- `AUDIT_POLICY.md` — traceability and audit rules
 - `schemas/specification-contract.schema.yaml` — canonical contract structure
+- `schemas/spec-audit.schema.json` — machine-readable audit metadata validation
 - `specs/spec-template.yaml` — human authoring template
 - `examples/domain-spec.example.yaml` — worked example
 - `examples/genesis.example.md` — worked genesis example
@@ -53,6 +56,7 @@ It is intentionally small, opinionated, and designed to evolve.
 - agents must resolve authority, not guess intent
 - lower-level specs may refine but must not contradict higher-level contracts
 - every meaningful change should be traceable from intention to implementation
+- no silent contract mutation
 
 ## Long-term direction
 

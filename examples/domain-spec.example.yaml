@@ -3,6 +3,10 @@ meta:
   title: Device Presence Domain Contract
   type: domain
   version: 0.1.0
+  contract_version: 0.1.0
+  compatibility:
+    supported_from: 0.1.0
+    deprecated_after: null
   status: draft
   owner: architecture
   created_at: 2026-03-13
@@ -113,8 +117,10 @@ validation:
 history:
   change_reason: first public example
   previous_version: null
+  change_type: additive
   approved_by:
     - Javier
     - godinez
+  review_ref: null
   notes:
     - example intended to show contract shape, not final production semantics

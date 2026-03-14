@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://specification-driven-agents.dev/schemas/spec-audit.schema.json",
+  "title": "Specification Audit Metadata",
+  "description": "Machine-readable validation schema for audit-related metadata inside a specification.",
+  "type": "object",
+  "required": ["meta", "history"],
+  "properties": {
+    "meta": {
+      "type": "object",
+      "required": ["version", "updated_at", "contract_version", "compatibility"],
+      "properties": {
+        "version": { "type": "string" },
+        "updated_at": { "type": "string" },
+        "contract_version": { "type": "string" },
+        "compatibility": {
+          "type": "object",
+          "required": ["supported_from", "deprecated_after"],
+          "properties": {
+            "supported_from": { "type": ["string", "null"] },
+            "deprecated_after": { "type": ["string", "null"] }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": true
+    },
+    "history": {
+      "type": "object",
+      "required": ["change_reason", "previous_version", "change_type", "approved_by"],
+      "properties": {
+        "change_reason": { "type": "string" },
+        "previous_version": { "type": ["string", "null"] },
+        "change_type": {
+          "type": "string",
+          "enum": ["breaking", "additive", "clarification", "deprecation", "security"]
+        },
+        "approved_by": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "review_ref": { "type": ["string", "null"] },
+        "notes": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

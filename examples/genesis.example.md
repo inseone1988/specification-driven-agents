@@ -134,5 +134,6 @@ After the initial release, the project should expand toward:
 
 **Genesis Created:** 2026-03-13  
 **Version:** 0.1.0  
+**Contract Version:** 0.1.0  
 **Status:** Draft  
 **Maintained By:** Javier + godinez

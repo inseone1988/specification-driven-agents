@@ -3,6 +3,10 @@ meta:
   title: Example Specification Title
   type: domain
   version: 0.1.0
+  contract_version: 0.1.0
+  compatibility:
+    supported_from: 0.1.0
+    deprecated_after: null
   status: draft
   owner: team-or-person
   created_at: 2026-03-13
@@ -64,5 +68,7 @@ validation:
 history:
   change_reason: initial draft
   previous_version: null
+  change_type: additive
   approved_by: []
+  review_ref: null
   notes: []

@@ -29,6 +29,8 @@ sections:
       - title
       - type
       - version
+      - contract_version
+      - compatibility
       - status
       - owner
       - created_at
@@ -37,7 +39,9 @@ sections:
       id: unique_within_project
       type: must_be_one_of_supported_spec_types
       version: semantic_version_recommended
-      status: should_be_one_of_draft_review_approved_deprecated
+      contract_version: must_reference_supported_contract_version
+      compatibility: should_define_supported_from_and_deprecated_after
+      status: should_be_one_of_draft_review_approved_implemented_deprecated_archived
 
   authority:
     required_fields:
@@ -106,6 +110,7 @@ sections:
     required_fields:
       - change_reason
       - previous_version
+      - change_type
       - approved_by
 
 recommended_authority_hierarchy:
@@ -119,3 +124,7 @@ validation_outcomes:
   compliant: spec satisfies the contract envelope
   partial: spec exists but is missing one or more required sections or fields
   invalid: spec contradicts higher-order authority or cannot be resolved safely
+
+machine_validation:
+  companion_schemas:
+    - schemas/spec-audit.schema.json
