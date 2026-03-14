@@ -34,9 +34,13 @@ Every specification should clearly define:
 
 - `VISION.md` — philosophy and framing
 - `SPEC_TYPES.md` — taxonomy of supported specification types
+- `SPEC_AUTHORITY_MODEL.md` — authority, inheritance, and contradiction rules
+- `SPEC_LIFECYCLE.md` — lifecycle states for specifications
+- `SPEC_RESOLUTION_RULES.md` — how humans and agents determine what to read
 - `schemas/specification-contract.schema.yaml` — canonical contract structure
 - `specs/spec-template.yaml` — human authoring template
 - `examples/domain-spec.example.yaml` — worked example
+- `examples/genesis.example.md` — worked genesis example
 
 ## Status
 
