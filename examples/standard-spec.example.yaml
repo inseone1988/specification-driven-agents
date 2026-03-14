@@ -1,0 +1,133 @@
+meta:
+  id: backend-security-standard
+  title: Backend Security Standard
+  type: standard
+  version: 0.1.0
+  contract_version: 0.1.0
+  compatibility:
+    supported_from: 0.1.0
+    deprecated_after: null
+  status: draft
+  owner: architecture
+  created_at: 2026-03-13
+  updated_at: 2026-03-13
+  tags:
+    - security
+    - backend
+    - trust-boundaries
+
+authority:
+  level: standard
+  inherits_from:
+    - genesis
+  depends_on: []
+  supersedes: []
+  conflicts_with: []
+
+purpose:
+  summary: Defines mandatory backend security rules that apply across implementation and domain specs.
+  problem: Systems drift into insecure behavior when trust boundaries and validation expectations are implicit.
+  scope:
+    includes:
+      - input validation
+      - authorization boundaries
+      - secret handling
+      - client trust assumptions
+    excludes:
+      - vendor-specific infrastructure configuration
+  non_goals:
+    - frontend visual behavior
+    - branding or product copy
+
+context:
+  bounded_context: cross-cutting-security
+  actors:
+    - backend
+    - frontend
+    - device
+    - administrator
+  capabilities:
+    - define mandatory trust boundaries
+    - constrain implementation behavior
+    - force explicit validation requirements
+  constraints:
+    - backend never trusts client interpretation
+    - secrets must not be hardcoded
+    - authorization must be enforced server-side
+
+contracts:
+  entities: []
+  commands: []
+  queries: []
+  events: []
+  invariants:
+    - backend never trusts frontend or device claims without validation
+    - permissions are enforced on the server
+    - sensitive data is never exposed outside declared scope
+  validations:
+    - all input validated before processing
+    - tenant or scope validation on protected resources
+    - secrets loaded from secure configuration sources
+  permissions:
+    - only authorized actors may access protected resources
+
+implementation:
+  targets:
+    - any backend implementation spec
+    - any api spec
+    - any security-sensitive domain spec
+  affected_paths:
+    - src/**
+    - api/**
+    - config/**
+  generation_mode: guided
+  migration_strategy: safe
+  notes:
+    - local implementations may refine controls but must not weaken them
+
+validation:
+  required_checks:
+    - no_authority_conflict
+    - trust_boundaries_declared
+    - validation_requirements_defined
+    - affected_paths_declared
+  acceptance_criteria:
+    - no protected endpoint relies solely on client-side filtering
+    - secrets are not committed in code
+    - authorization behavior is explicit in implementation-driving specs
+  test_requirements:
+    - authorization_test_coverage
+    - secret_handling_review
+    - input_validation_tests
+  traceability_requirements:
+    - link_to_governed_specs
+    - link_to_security_sensitive_paths
+
+agent_directives:
+  required_read_order:
+    - genesis
+    - applicable-standards
+    - current-spec
+  must:
+    - preserve_security_constraints
+    - flag_trust_boundary_gaps
+    - update_history_fields_when_modifying
+  must_not:
+    - infer_missing_authorization_rules
+    - weaken_server_side_validation
+    - modify_undeclared_sensitive_paths_without_review
+  completion_requirements:
+    - validation_requirements_remain_explicit
+    - affected_paths_are_declared
+    - traceability_fields_are_updated
+
+history:
+  change_reason: first public standard example
+  previous_version: null
+  change_type: additive
+  approved_by:
+    - Javier
+    - godinez
+  review_ref: null
+  notes:
+    - example intended to show a cross-cutting standard contract

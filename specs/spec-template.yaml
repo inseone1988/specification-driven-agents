@@ -65,6 +65,15 @@ validation:
     - must_link_to_parent_specs
     - must_identify_affected_targets
 
+agent_directives:
+  required_read_order:
+    - genesis
+    - applicable-standards
+    - current-spec
+  must: []
+  must_not: []
+  completion_requirements: []
+
 history:
   change_reason: initial draft
   previous_version: null

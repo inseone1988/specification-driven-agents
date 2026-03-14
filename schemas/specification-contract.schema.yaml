@@ -14,6 +14,9 @@ required_top_level_sections:
   - validation
   - history
 
+optional_top_level_sections:
+  - agent_directives
+
 rules:
   - every_spec_must_have_identity
   - every_spec_must_define_authority_level
@@ -105,6 +108,18 @@ sections:
       required_checks: must_be_explicit_and_reviewable
       acceptance_criteria: must_be_testable
       traceability_requirements: must_link_spec_to_governing_or_affected_artifacts
+
+  agent_directives:
+    required_fields:
+      - required_read_order
+      - must
+      - must_not
+      - completion_requirements
+    field_rules:
+      required_read_order: should_identify_minimum_authoritative_read_set
+      must: should_define_mandatory_agent_behaviors_when_present
+      must_not: should_define_disallowed_agent_behaviors_when_present
+      completion_requirements: should_define_done_conditions_for_agent-driven work
 
   history:
     required_fields:

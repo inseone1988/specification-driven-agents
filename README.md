@@ -43,7 +43,9 @@ Every specification should clearly define:
 - `schemas/spec-audit.schema.json` — machine-readable audit metadata validation
 - `specs/spec-template.yaml` — human authoring template
 - `examples/domain-spec.example.yaml` — worked example
+- `examples/standard-spec.example.yaml` — worked standard example
 - `examples/genesis.example.md` — worked genesis example
+- `CHANGELOG.md` — release history
 
 ## Status
 
@@ -57,6 +59,7 @@ It is intentionally small, opinionated, and designed to evolve.
 - lower-level specs may refine but must not contradict higher-level contracts
 - every meaningful change should be traceable from intention to implementation
 - no silent contract mutation
+- agent behavior should be directed by contract when automation is involved
 
 ## Long-term direction
 
