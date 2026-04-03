@@ -1,0 +1,208 @@
+# Standard Specification: Security Standard Specification
+#
+# Standards define cross-cutting engineering rules and conventions that apply
+# across all domains and implementations. They represent "engineering laws"
+# that must be followed throughout the system.
+
+meta:
+  id: standard-security
+  title: Security Standard Specification
+  type: standard
+  version: 0.1.0
+  contract_version: 0.1.0
+  compatibility:
+    supported_from: 0.1.0
+    deprecated_after: null  # Set date when this standard should be deprecated
+  status: draft  # draft | review | approved | implemented | deprecated | archived
+  owner: lupit
+  created_at: 2026-04-03
+  updated_at: 2026-04-03
+  tags: []  # e.g., ["security", "performance", "code-style", "testing"]
+
+authority:
+  level: standard
+  inherits_from:
+    - genesis  # All standards inherit from genesis
+    # Add other standards this builds upon
+    # - standard-code-style
+  depends_on: []  # Other specs this standard depends on
+  supersedes: []  # Previous standards this replaces
+  conflicts_with: []  # Other specs that conflict with this standard
+
+purpose:
+  summary: [Brief summary of the standard specification]
+  problem: |
+    [Describe the cross-cutting engineering problem this standard solves]
+    
+    Example:
+    "Different teams use inconsistent error handling patterns, making it
+    difficult to maintain a unified error experience and debug issues."
+  scope:
+    includes:
+      - Engineering rules and conventions across all domains
+      - Cross-cutting concerns (security, performance, observability)
+      - Global constraints and quality gates
+      - Development workflow and tooling standards
+      - Code organization and architectural patterns
+    excludes:
+      - Domain-specific business logic and rules
+      - Implementation technology choices (unless specified)
+      - Business requirements and processes
+      - User interface design and UX patterns
+  non_goals:
+    - [List what this standard explicitly does not cover]
+    # Example:
+    # - Domain-specific validation rules
+    # - Business process definitions
+    # - API endpoint design (covered by API specs)
+
+context:
+  bounded_context: engineering-standards  # Fixed for all standards
+  actors:
+    - developers  # Implement and follow standards
+    - architects  # Define and maintain standards
+    - ai-agents  # Enforce and apply standards
+    - code-reviewers  # Verify compliance
+    - ci-cd-pipelines  # Automatically check compliance
+  capabilities:
+    - Enforce consistent engineering practices
+    - Define measurable quality criteria
+    - Provide automated compliance checking
+    - Establish clear violation detection
+  constraints:
+    - Must be technically enforceable (automatically or through review)
+    - Must not contradict genesis principles
+    - Must have clear compliance criteria
+    - Must be versioned and change-controlled
+
+contracts:
+  # Standards typically don't have domain entities, but define rules
+  rules:
+    - [List specific, enforceable rules]
+    # Example structure for error handling standard:
+    # - rule: "All errors must use structured error types"
+    #   description: "Errors should be instances of specific error classes"
+    #   enforcement: static-analysis, code-review
+    #   example:
+    #     good: "throw new ValidationError('Invalid email format')"
+    #     bad: "throw new Error('Something went wrong')"
+    
+    # - rule: "Error messages must be user-friendly"
+    #   description: "Error messages should help users understand the problem"
+    #   enforcement: code-review
+    #   example:
+    #     good: "Email address must contain '@' symbol"
+    #     bad: "Invalid input"
+  
+  invariants:
+    - [List invariants that must always hold]
+    # Example:
+    # - "All API endpoints must include error handling"
+    # - "No sensitive data in logs"
+    # - "All external calls must have timeouts"
+  
+  validations:
+    - [List validation rules for compliance]
+    # Example:
+    # - "Error handling must be tested for all public methods"
+    # - "Log statements must not contain PII"
+  
+  quality_gates:
+    - [List quality criteria and thresholds]
+    # Example:
+    # - metric: test_coverage
+    #   threshold: 80%
+    #   measurement: line coverage
+    # - metric: static_analysis_issues
+    #   threshold: 0 critical, ≤5 major
+    #   measurement: sonarqube scan
+  
+  compliance_criteria:
+    - [List how compliance is measured]
+    # Example:
+    # - "All new code must pass static analysis"
+    # - "Test coverage must not decrease"
+    # - "No linting errors in CI pipeline"
+
+implementation:
+  targets:
+    - .github/workflows/  # CI/CD pipelines
+    - .eslintrc.js  # Linting configuration
+    - .prettierrc  # Code formatting
+    - jest.config.js  # Testing configuration
+    # Add other configuration files as needed
+  affected_paths:
+    - src/**/*  # All source code
+    - tests/**/*  # All tests
+    - .github/**/*  # CI/CD workflows
+    - config/**/*  # Configuration files
+  generation_mode: guided  # guided | automatic | manual
+  migration_strategy: safe  # safe | breaking | deprecation
+  enforcement_mechanisms:
+    - static-analysis  # ESLint, TypeScript, etc.
+    - code-review  # Pull request reviews
+    - ci-checks  # Automated pipeline checks
+    - pre-commit-hooks  # Git hooks
+    - editor-integration  # IDE/editor plugins
+  automation_support:
+    - linting-rules  # Can be automated with linters
+    - code-generation  # Can generate compliant code
+    - template-enforcement  # Can enforce via templates
+  notes:
+    - Standards should be automated where possible
+    - Provide clear examples of compliant vs non-compliant code
+    - Include migration guides for existing code
+
+validation:
+  required_checks:
+    - genesis_compliance  # Must align with genesis principles
+    - technical_enforceability  # Must be technically enforceable
+    - clarity_test  # Rules must be clear and unambiguous
+    - contradiction_check  # Must not contradict other standards
+  acceptance_criteria:
+    - Rules are technically enforceable (automatically or manually)
+    - No contradictions with genesis or other standards
+    - Clear compliance criteria and examples provided
+    - Enforcement mechanisms specified
+    - Migration path defined (if applicable)
+  test_requirements:
+    - compliance_test_suite  # Tests that verify standard compliance
+    - contradiction_detection_test  # Tests for conflicts with other specs
+    - enforcement_mechanism_test  # Tests for automation support
+  traceability_requirements:
+    - link_to_genesis  # Must reference genesis specification
+    - link_to_affected_domains  # Must list domains affected
+    - compliance_tracking  # Must support compliance tracking
+
+agent_directives:
+  required_read_order:
+    - genesis  # First, understand overall vision
+    - this_standard  # Then, this specific standard
+    - related_standards  # Finally, any related standards
+  must:
+    - Enforce standard rules in all implementations
+    - Check for standard compliance automatically
+    - Report violations with specific guidance
+    - Suggest fixes for violations
+    - Apply standards consistently across all domains
+  must_not:
+    - Create implementations that violate standards
+    - Ignore standard constraints for convenience
+    - Apply standards inconsistently
+    - Create workarounds that circumvent standards
+  completion_requirements:
+    - All implementations comply with standard rules
+    - No standard violations detected in codebase
+    - Compliance checking automated in CI/CD
+    - Violations are addressed or properly exempted
+
+history:
+  change_reason: initial standard specification
+  previous_version: null
+  change_type: additive  # additive | breaking | deprecation | correction | refactor
+  approved_by:
+    - lupit
+  review_ref: null  # Reference to review discussion
+  notes:
+    - Initial engineering standard definition
+    # Add other notes as needed
