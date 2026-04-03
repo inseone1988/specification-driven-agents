@@ -192,11 +192,19 @@ async function findSpecificationFiles(
     return files.filter(file => {
       const ext = path.extname(file).toLowerCase()
       const filename = path.basename(file).toLowerCase()
+      const dirname = path.basename(path.dirname(file)).toLowerCase()
       
       // Skip non-spec files
       if (filename.includes('package.json') || 
           filename.includes('tsconfig') ||
-          filename.includes('.config.')) {
+          filename.includes('.config.') ||
+          filename === 'readme.md' ||
+          filename === 'changelog.md') {
+        return false
+      }
+      
+      // Only include .md files that are in spec directories
+      if (ext === '.md' && !['specs', 'specifications', 'templates'].includes(dirname)) {
         return false
       }
       

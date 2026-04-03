@@ -128,18 +128,32 @@ ci:
     'utf-8'
   )
 
-  // Copy schema file if it exists in the tooling
+  // Copy schema file
   Logger.info('Setting up schemas...')
   try {
-    const sourceSchema = path.join(__dirname, '../../schemas/specification-contract.schema.yaml')
     const targetSchema = path.join(absolutePath, 'schemas/specification-contract.schema.yaml')
+    const packageRoot = path.join(__dirname, '..', '..')
     
-    // Try to copy from tooling schemas, or create a basic one
-    if (await fileExists(sourceSchema)) {
-      await fs.copyFile(sourceSchema, targetSchema)
-      Logger.debug('Copied specification contract schema')
-    } else {
-      // Create a basic schema
+    const possibleSchemaPaths = [
+      path.join(packageRoot, 'schemas', 'specification-contract.schema.yaml'),
+      path.join(process.env.APPDATA || '', 'npm', 'node_modules', 'spec-driven-agents', 'schemas', 'specification-contract.schema.yaml'),
+      path.join(process.env.APPDATA || '', 'npm', 'node_modules', 'spec-driven-agents', 'dist', 'schemas', 'specification-contract.schema.yaml'),
+      path.join(process.cwd(), 'schemas', 'specification-contract.schema.yaml'),
+      path.join(process.cwd(), '..', 'schemas', 'specification-contract.schema.yaml'),
+    ]
+    
+    let schemaCopied = false
+    for (const schemaPath of possibleSchemaPaths) {
+      if (await fileExists(schemaPath)) {
+        await fs.copyFile(schemaPath, targetSchema)
+        Logger.info(`Copied schema from: ${schemaPath}`)
+        schemaCopied = true
+        break
+      }
+    }
+    
+    if (!schemaCopied) {
+      Logger.warn('No schema found, creating basic schema')
       const basicSchema = `# Basic Specification Contract Schema
 # For full schema, see: https://github.com/inseone1988/specification-driven-agents
 
@@ -154,6 +168,16 @@ schema:
     }
   } catch (error) {
     Logger.warn('Could not setup schemas:', error instanceof Error ? error.message : String(error))
+  }
+
+  // Copy templates
+  Logger.info('Setting up templates...')
+  try {
+    const templatesDir = path.join(absolutePath, 'templates')
+    await copyTemplates(absolutePath, templatesDir)
+    Logger.debug('Templates setup completed')
+  } catch (error) {
+    Logger.warn('Could not setup templates:', error instanceof Error ? error.message : String(error))
   }
 
   // Create example specs if not skipped
@@ -221,7 +245,9 @@ purpose:
     ]
 
     for (const example of examples) {
-      const examplePath = path.join(absolutePath, 'specs', `${example.type}s`, `${example.name}.yaml`)
+      // Special handling for 'genesis' type (no 's' plural)
+      const typeDir = example.type === 'genesis' ? 'genesis' : `${example.type}s`
+      const examplePath = path.join(absolutePath, 'specs', typeDir, `${example.name}.yaml`)
       await fs.writeFile(examplePath, example.content, 'utf-8')
       Logger.debug(`Created example: ${example.type}/${example.name}`)
     }
@@ -355,6 +381,150 @@ async function fileExists(filePath: string): Promise<boolean> {
   } catch {
     return false
   }
+}
+
+async function copyTemplates(sourceDir: string, targetDir: string): Promise<void> {
+  try {
+    await fs.mkdir(targetDir, { recursive: true })
+    
+    // Determinar la ruta base del paquete instalado
+    // __dirname en dist/src/cli/init.js -> necesitamos subir a dist/
+    const packageRoot = path.join(__dirname, '..', '..')
+    
+    const possibleSourceDirs = [
+      // 1. Desde instalación global (dist/templates en el paquete)
+      path.join(packageRoot, 'templates'),
+      // 2. Desde desarrollo local (tooling/templates)
+      path.join(process.cwd(), 'templates'),
+      path.join(process.cwd(), '..', 'templates'),
+      // 3. Desde node_modules (instalación global en Windows)
+      path.join(process.env.APPDATA || '', 'npm', 'node_modules', 'spec-driven-agents', 'templates'),
+      path.join(process.env.APPDATA || '', 'npm', 'node_modules', 'spec-driven-agents', 'dist', 'templates'),
+      // 4. Desde node_modules (instalación global en Unix)
+      '/usr/local/lib/node_modules/spec-driven-agents/templates',
+      '/usr/local/lib/node_modules/spec-driven-agents/dist/templates',
+      // 5. Desde código fuente
+      path.join(__dirname, '..', '..', 'templates'),
+      path.join(__dirname, '..', '..', '..', 'templates'),
+    ]
+    
+    let foundTemplates = false
+    for (const possibleDir of possibleSourceDirs) {
+      try {
+        if (await fileExists(possibleDir)) {
+          const files = await fs.readdir(possibleDir)
+          const templateFiles = files.filter(file => file.endsWith('.yaml') || file.endsWith('.md'))
+          
+          if (templateFiles.length > 0) {
+            Logger.info(`Found templates in: ${possibleDir}`)
+            for (const file of templateFiles) {
+              const sourcePath = path.join(possibleDir, file)
+              const targetPath = path.join(targetDir, file)
+              await fs.copyFile(sourcePath, targetPath)
+              Logger.debug(`Copied template: ${file}`)
+            }
+            foundTemplates = true
+            Logger.info(`Copied ${templateFiles.length} templates`)
+            break
+          }
+        }
+      } catch {
+        continue
+      }
+    }
+    
+    if (!foundTemplates) {
+      Logger.warn('No templates found. Creating minimal templates...')
+      await createMinimalTemplates(targetDir)
+    }
+  } catch (error) {
+    Logger.warn(`Failed to copy templates: ${error instanceof Error ? error.message : String(error)}`)
+    try {
+      await createMinimalTemplates(targetDir)
+    } catch {
+      // Directorio ya existe
+    }
+  }
+}
+
+async function createMinimalTemplates(templatesDir: string): Promise<void> {
+  const minimalTemplates = {
+    'domain.yaml': `# Domain Specification: {{title}}
+#
+# Domain specifications define business domains with entities,
+# value objects, aggregates, domain services, and business rules.
+
+meta:
+  id: {{id}}
+  title: {{title}}
+  type: domain
+  version: 0.1.0
+  contract_version: 0.1.0
+  compatibility:
+    supported_from: 0.1.0
+    deprecated_after: null
+  status: draft
+  owner: {{owner}}
+  created_at: {{date}}
+  updated_at: {{date}}
+  tags: []
+
+# ... rest of domain template (truncated for brevity)
+`,
+    'standard.yaml': `# Standard Specification: {{title}}
+#
+# Standard specifications define engineering standards,
+# coding conventions, and cross-cutting concerns.
+
+meta:
+  id: {{id}}
+  title: {{title}}
+  type: standard
+  version: 0.1.0
+  contract_version: 0.1.0
+  compatibility:
+    supported_from: 0.1.0
+    deprecated_after: null
+  status: draft
+  owner: {{owner}}
+  created_at: {{date}}
+  updated_at: {{date}}
+  tags: []
+
+# ... rest of standard template
+`,
+    'genesis.md': `# Genesis Specification: {{title}}
+#
+# Genesis specifications define the overall vision, principles,
+# and foundational decisions for a project or system.
+
+## 🎯 Project Vision
+{{summary}}
+
+## 📋 Core Principles
+1. **Principle 1**: [Description]
+2. **Principle 2**: [Description]
+3. **Principle 3**: [Description]
+
+## 🏗️ Architectural Decisions
+- [Decision 1]
+- [Decision 2]
+- [Decision 3]
+
+## 📊 Success Metrics
+- [Metric 1]
+- [Metric 2]
+- [Metric 3]
+`
+  }
+  
+  for (const [filename, content] of Object.entries(minimalTemplates)) {
+    const filePath = path.join(templatesDir, filename)
+    await fs.writeFile(filePath, content, 'utf-8')
+    Logger.debug(`Created minimal template: ${filename}`)
+  }
+  
+  Logger.info('Created minimal templates for domain, standard, and genesis types')
 }
 
 export function createInitCommand(): Command {

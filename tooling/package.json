@@ -9,6 +9,13 @@
   "bin": {
     "sda": "./bin/sda.js"
   },
+  "files": [
+    "dist",
+    "bin",
+    "templates",
+    "schemas",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",

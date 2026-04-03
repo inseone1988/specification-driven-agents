@@ -24,11 +24,8 @@ describe('Format Rules by Specification Type', () => {
   })
   
   afterAll(async () => {
-    try {
-      await fs.rm(testOutputDir, { recursive: true, force: true })
-    } catch {
-      // Ignore cleanup errors
-    }
+    // Don't clean up - leave test output for inspection
+    // This avoids race conditions with parallel test execution
   })
 
   describe('TemplateLoader format detection', () => {

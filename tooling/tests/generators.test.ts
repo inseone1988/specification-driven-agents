@@ -43,22 +43,12 @@ describe('SpecGenerator', () => {
   beforeEach(async () => {
     const templateLoader = new TemplateLoader(path.join(__dirname, '..', 'templates'))
     specGenerator = new SpecGenerator(templateLoader)
-    // Clean test output directory
-    try {
-      await fs.rm(testOutputDir, { recursive: true, force: true })
-    } catch (error) {
-      // Directory doesn't exist, that's fine
-    }
+    // Ensure test output directory exists
     await fs.mkdir(testOutputDir, { recursive: true })
   })
 
   afterEach(async () => {
-    // Clean up test output directory
-    try {
-      await fs.rm(testOutputDir, { recursive: true, force: true })
-    } catch (error) {
-      // Ignore cleanup errors
-    }
+    // Don't clean up - avoid race conditions with parallel test files
   })
 
   it('should generate domain specification', async () => {

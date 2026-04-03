@@ -1,4 +1,5 @@
 import fs from 'fs/promises'
+import fsSync from 'fs'
 import path from 'path'
 import { Logger } from '../utils/logger'
 
@@ -6,7 +7,39 @@ export class TemplateLoader {
   private templatesDir: string
 
   constructor(templatesDir?: string) {
-    this.templatesDir = templatesDir || path.join(process.cwd(), 'templates')
+    if (templatesDir) {
+      this.templatesDir = templatesDir
+    } else {
+      // Buscar plantillas en múltiples ubicaciones:
+      // 1. Directorio proporcionado
+      // 2. Directorio actual/templates (desarrollo)
+      // 3. Directorio de instalación global (__dirname)
+      // 4. Directorio dist/templates (build)
+      
+      const possiblePaths = [
+        path.join(process.cwd(), 'templates'), // Desarrollo local
+        path.join(__dirname, '..', 'templates'), // Desde código fuente
+        path.join(__dirname, '..', '..', 'templates'), // Desde dist
+        path.join(process.cwd(), 'node_modules', 'spec-driven-agents', 'dist', 'templates'), // Instalación global
+      ]
+      
+      // Usar la primera ruta que exista
+      for (const possiblePath of possiblePaths) {
+        try {
+          if (fsSync.existsSync(possiblePath)) {
+            this.templatesDir = possiblePath
+            Logger.debug(`Using templates directory: ${this.templatesDir}`)
+            return
+          }
+        } catch {
+          // Continuar con la siguiente ruta
+        }
+      }
+      
+      // Si no se encuentra ninguna, usar la predeterminada
+      this.templatesDir = path.join(process.cwd(), 'templates')
+      Logger.warn(`No templates directory found, using default: ${this.templatesDir}`)
+    }
   }
 
   async loadTemplate(templateName: string): Promise<string> {

@@ -1,5 +1,6 @@
 import yaml from 'js-yaml'
 import fs from 'fs/promises'
+import fsSync from 'fs'
 import path from 'path'
 import { Logger } from '../utils/logger'
 import { SpecContract, ValidationResult, ValidationError, ValidationWarning } from '../types'
@@ -34,17 +35,31 @@ export class SchemaValidator {
     if (schemaPath) {
       this.schemaPath = schemaPath
     } else {
-      // Determine if we're in the tooling directory or project root
-      const cwd = process.cwd()
-      const isToolingDir = cwd.endsWith('tooling') || path.basename(cwd) === 'tooling'
+      // Buscar schema en múltiples ubicaciones
+      const possiblePaths = [
+        path.join(process.cwd(), 'schemas', 'specification-contract.schema.yaml'), // Proyecto actual
+        path.join(process.cwd(), '..', 'schemas', 'specification-contract.schema.yaml'), // Desde tooling directory
+        path.join(__dirname, '..', '..', 'schemas', 'specification-contract.schema.yaml'), // Desde código fuente
+        path.join(__dirname, '..', '..', '..', 'schemas', 'specification-contract.schema.yaml'), // Desde dist
+        path.join(process.cwd(), 'node_modules', 'spec-driven-agents', 'dist', 'schemas', 'specification-contract.schema.yaml'), // Instalación global
+      ]
       
-      if (isToolingDir) {
-        // We're in tooling directory, go up one level to project root
-        this.schemaPath = path.join(cwd, '..', 'schemas', 'specification-contract.schema.yaml')
-      } else {
-        // We're in project root or somewhere else
-        this.schemaPath = path.join(cwd, 'schemas', 'specification-contract.schema.yaml')
+      // Usar la primera ruta que exista
+      for (const possiblePath of possiblePaths) {
+        try {
+          if (fsSync.existsSync(possiblePath)) {
+            this.schemaPath = possiblePath
+            Logger.debug(`Using schema path: ${this.schemaPath}`)
+            return
+          }
+        } catch {
+          // Continuar con la siguiente ruta
+        }
       }
+      
+      // Si no se encuentra, usar la predeterminada
+      this.schemaPath = path.join(process.cwd(), 'schemas', 'specification-contract.schema.yaml')
+      Logger.warn(`No schema found, using default: ${this.schemaPath}`)
     }
   }
 
@@ -87,7 +102,20 @@ export class SchemaValidator {
       
       // Validate against schema if loaded
       if (this.schema) {
-        this.validateAgainstSchema(spec, filePath, errors, warnings)
+        try {
+          this.validateAgainstSchema(spec, filePath, errors, warnings)
+        } catch (schemaError) {
+          Logger.warn(`Schema validation failed, falling back to basic validation: ${schemaError instanceof Error ? schemaError.message : String(schemaError)}`)
+          // Fallback to basic validation
+          this.validateMeta(spec, filePath, errors, warnings)
+          this.validateAuthority(spec, filePath, errors, warnings)
+          this.validatePurpose(spec, filePath, errors, warnings)
+          this.validateContext(spec, filePath, errors, warnings)
+          this.validateContracts(spec, filePath, errors, warnings)
+          this.validateImplementation(spec, filePath, errors, warnings)
+          this.validateValidation(spec, filePath, errors, warnings)
+          this.validateHistory(spec, filePath, errors, warnings)
+        }
       } else {
         // Fallback to basic validation
         this.validateMeta(spec, filePath, errors, warnings)
