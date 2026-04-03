@@ -1,0 +1,291 @@
+# Implementation Specification: {{title}}
+#
+# Implementation specifications define concrete technical details for
+# translating domain logic and API contracts into actual code. They specify
+# technology choices, code structure, patterns, and generation hints.
+
+meta:
+  id: {{id}}
+  title: {{title}}
+  type: implementation
+  version: 0.1.0
+  contract_version: 0.1.0
+  compatibility:
+    supported_from: 0.1.0
+    deprecated_after: null  # Set date when this implementation should be deprecated
+  status: draft  # draft | review | approved | implemented | deprecated | archived
+  owner: {{owner}}
+  created_at: {{date}}
+  updated_at: {{date}}
+  tags: []  # e.g., ["backend", "frontend", "database", "infrastructure"]
+
+authority:
+  level: implementation
+  inherits_from:
+    - genesis  # All implementations inherit from genesis
+    - relevant_standards  # e.g., standard-code-style, standard-testing
+    - relevant_domains  # e.g., domain-user-management
+    - relevant_apis  # e.g., api-user-management-v1
+  depends_on: []  # Other specs this implementation depends on
+  supersedes: []  # Previous implementations this replaces
+  conflicts_with: []  # Other specs that conflict with this implementation
+
+purpose:
+  summary: {{summary}}
+  problem: |
+    [Describe the technical implementation problem being solved]
+    
+    Example:
+    "We need to implement the User domain model in TypeScript with proper
+    validation, persistence, and test coverage while following established
+    patterns and standards."
+  scope:
+    includes:
+      - Concrete implementation details and code structure
+      - Technology choices, frameworks, and libraries
+      - Design patterns and architectural decisions
+      - Database schemas and persistence strategies
+      - Code generation templates and patterns
+      - Testing strategies and test structure
+    excludes:
+      - Business logic definition (covered by domain specs)
+      - User experience and interface design
+      - Operational deployment and infrastructure
+      - API contract definition (covered by API specs)
+  non_goals:
+    - [List implementation aspects not covered]
+    # Example:
+    # - UI component implementation
+    # - Deployment pipeline configuration
+    # - Monitoring and alerting setup
+
+context:
+  bounded_context: implementation  # Fixed for implementation specs
+  technology_stack:
+    language: typescript  # e.g., typescript, python, java, go
+    runtime: node  # e.g., node, bun, deno, jvm, python
+    framework:  # Primary frameworks
+      - express  # Web framework
+      - typeorm  # ORM
+    database: postgresql  # Primary database
+    testing:  # Testing tools
+      - jest  # Test runner
+      - supertest  # HTTP testing
+  actors:
+    - developers  # Write and maintain implementation
+    - code-reviewers  # Review implementation quality
+    - ai-agents  # Generate and validate code
+    - qa-engineers  # Test implementation
+    - devops-engineers  # Deploy implementation
+  capabilities:
+    - Generate production-ready, maintainable code
+    - Enforce coding standards and patterns
+    - Implement technical solutions to business problems
+    - Create comprehensive test suites
+    - Ensure performance and scalability
+  constraints:
+    - Must comply with all governing specifications
+    - Must be maintainable, testable, and documented
+    - Must follow established patterns and conventions
+    - Must consider performance and security implications
+
+contracts:
+  invariants:
+    - [List implementation invariants]
+    # Example:
+    # - "Implementation must not contradict higher-level specifications"
+    # - "All generated code must be type-safe"
+    # - "Database schemas must be versioned and migratable"
+    # - "All public APIs must have tests"
+  
+  validations:
+    - [List implementation validations]
+    # Example:
+    # - "Code must compile without errors"
+    # - "All tests must pass"
+    # - "Code must follow established patterns"
+    # - "Performance benchmarks must be met"
+  
+  # Code structure and organization
+  code_organization:
+    modules:  # Module/package structure
+      - [Define module structure]
+      # Example:
+      # - name: src/domains/user
+      #   purpose: "User domain implementation"
+      #   contains:
+      #     - entities/  # Domain entities
+      #     - repositories/  # Data access
+      #     - services/  # Domain services
+      #     - dtos/  # Data transfer objects
+    
+    layers:  # Architectural layers
+      - [Define layer responsibilities]
+      # Example:
+      # - name: domain
+      #   responsibility: "Business logic and rules"
+      #   dependencies: "None (pure business logic)"
+      # - name: application
+      #   responsibility: "Orchestrates domain logic"
+      #   dependencies: "domain layer"
+  
+  # Design patterns to apply
+  patterns:
+    - [List design patterns to use]
+    # Example:
+    # - pattern: repository
+    #   purpose: "Abstract data access"
+    #   implementation: "Interface + concrete implementation"
+    #   example: "UserRepository interface with PostgresUserRepository"
+    
+    # - pattern: dependency-injection
+    #   purpose: "Manage dependencies"
+    #   implementation: "Constructor injection"
+    #   example: "class UserService { constructor(private repo: UserRepository) }"
+  
+  # Data persistence
+  persistence:
+    entities:  # Database entities
+      - [Define database entities]
+      # Example:
+      # - name: User
+      #   table: users
+      #   columns:
+      #     - name: id, type: uuid, primary: true
+      #     - name: email, type: varchar(255), unique: true, nullable: false
+      #     - name: name, type: varchar(255), nullable: false
+      #     - name: created_at, type: timestamp, default: now()
+    
+    migrations:  # Database migrations
+      - [Define migration strategy]
+      # Example:
+      # - strategy: "TypeORM migrations"
+      #   location: "src/migrations/"
+      #   naming: "TIMESTAMP-description.ts"
+  
+  # Code generation hints
+  generation_hints:
+    templates:  # Code generation templates
+      - [Define templates for code generation]
+      # Example:
+      # - type: entity
+      #   template: |
+      #     import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm'
+      #     
+      #     @Entity('{{tableName}}')
+      #     export class {{className}} {
+      #       @PrimaryGeneratedColumn('uuid')
+      #       id: string
+      #       
+      #       // Add columns based on entity definition
+      #     }
+    
+    placeholders:  # Placeholders for dynamic content
+      - [Define placeholder patterns]
+      # Example:
+      # - pattern: "{{className}}"
+      #   description: "Class name in PascalCase"
+      #   source: "entity.name in PascalCase"
+    
+    transformations:  # Data transformations
+      - [Define transformation rules]
+      # Example:
+      # - rule: "database column names to camelCase"
+      #   pattern: "snake_case → camelCase"
+      #   example: "user_email → userEmail"
+  
+  quality_requirements:
+    - [List quality requirements]
+    # Example:
+    # - "Test coverage ≥ 80%"
+    # - "No linting errors"
+    # - "All TypeScript strict mode checks pass"
+    # - "No circular dependencies"
+
+implementation:
+  targets:
+    - [List specific files or directories to generate]
+    # Example:
+    # - src/domains/user/entities/User.ts
+    # - src/domains/user/repositories/UserRepository.ts
+    # - src/domains/user/services/UserService.ts
+    # - tests/domains/user/UserService.test.ts
+  affected_paths:
+    - [List all paths affected by this implementation]
+    # Example:
+    # - src/domains/user/**/*
+    # - tests/domains/user/**/*
+    # - src/migrations/*-user-*.ts
+  generation_mode: guided  # guided | automatic | manual
+  migration_strategy: safe  # safe | breaking | deprecation
+  code_generation:
+    tool:  # Code generation tool
+      - typescript  # TypeScript compiler
+      - typeorm  # ORM code generation
+    approach: template-based  # template-based | llm-based | hybrid
+    validation: compile-time  # compile-time | runtime | both
+  notes:
+    - Implementation should be incremental and reversible
+    - Follow Test-Driven Development (TDD) where appropriate
+    - Keep dependencies minimal and explicit
+    - Document non-obvious design decisions
+
+validation:
+  required_checks:
+    - spec_compliance  # Compliance with all governing specs
+    - code_quality  # Code quality standards
+    - test_coverage  # Test coverage requirements
+    - type_safety  # Type safety (for typed languages)
+    - pattern_compliance  # Design pattern compliance
+  acceptance_criteria:
+    - Code compiles without errors or warnings
+    - All tests pass (unit, integration, e2e)
+    - Code review approved by at least one reviewer
+    - Performance benchmarks meet requirements
+    - Security review completed
+  test_requirements:
+    - unit_tests  # Unit tests for all public methods
+    - integration_tests  # Integration tests for components
+    - e2e_tests  # End-to-end tests for critical paths
+    - performance_tests  # Performance and load tests
+    - security_tests  # Security vulnerability tests
+  traceability_requirements:
+    - link_to_governing_specs  # Must reference all governing specs
+    - link_to_implementation_code  # Must link to generated code
+    - change_tracking  # Must track changes to implementation
+
+agent_directives:
+  required_read_order:
+    - genesis  # Overall vision and principles
+    - relevant_standards  # Coding standards and patterns
+    - relevant_domains  # Business logic to implement
+    - relevant_apis  # API contracts to fulfill
+    - this_implementation_spec  # This implementation specification
+  must:
+    - Generate code that complies with all specifications
+    - Follow established patterns and conventions
+    - Include comprehensive tests with good coverage
+    - Document complex logic and design decisions
+    - Validate generated code compiles and passes tests
+  must_not:
+    - Generate code that violates specifications
+    - Introduce technical debt without explicit justification
+    - Bypass validation or testing steps
+    - Create tightly coupled components
+  completion_requirements:
+    - All specified code generated and tested
+    - All specification requirements satisfied
+    - Code review completed and approved
+    - Performance and security requirements met
+    - Documentation complete and accurate
+
+history:
+  change_reason: initial implementation specification
+  previous_version: null
+  change_type: additive  # additive | breaking | deprecation | correction | refactor
+  approved_by:
+    - {{owner}}
+  review_ref: null  # Reference to review discussion
+  notes:
+    - Initial implementation plan
+    # Add other notes as needed

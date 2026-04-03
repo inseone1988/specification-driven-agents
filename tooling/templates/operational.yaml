@@ -1,0 +1,136 @@
+# Operational Specification: {{title}}
+#
+# Operational specifications define runtime, deployment, monitoring,
+# and maintenance requirements for the system.
+
+meta:
+  id: {{id}}
+  title: {{title}}
+  type: operational
+  version: 0.1.0
+  contract_version: 0.1.0
+  compatibility:
+    supported_from: 0.1.0
+    deprecated_after: null  # Set date when this operational spec should be deprecated
+  status: draft  # draft | review | approved | implemented | deprecated | archived
+  owner: {{owner}}
+  created_at: {{date}}
+  updated_at: {{date}}
+  tags: []  # e.g., ["deployment", "monitoring", "scaling", "maintenance"]
+
+authority:
+  level: implementation
+  inherits_from:
+    - genesis
+    - relevant_standards
+  depends_on: []
+  supersedes: []
+  conflicts_with: []
+
+purpose:
+  summary: {{summary}}
+  problem: |
+    [Describe the operational problem being solved]
+  scope:
+    includes:
+      - deployment procedures
+      - monitoring and alerting
+      - scaling and performance
+      - incident response
+    excludes:
+      - implementation details
+      - business logic
+      - development processes
+  non_goals:
+    - [List operational aspects not covered]
+
+context:
+  bounded_context: operations
+  actors:
+    - operations-engineers
+    - site-reliability-engineers
+    - developers
+  capabilities:
+    - deploy and maintain systems
+    - monitor system health
+    - respond to incidents
+  constraints:
+    - must ensure system availability
+    - must maintain performance standards
+    - must follow operational best practices
+
+contracts:
+  invariants:
+    - systems must be available
+    - performance must meet SLAs
+    - incidents must be addressed promptly
+  
+  validations:
+    - availability_validation
+    - performance_validation
+    - incident_response_validation
+  
+  entities: []
+  commands: []
+  queries: []
+  events: []
+  permissions:
+    - operations_team_can_manage_systems
+    - developers_can_deploy_changes
+
+implementation:
+  targets:
+    - ops/
+    - deployment/
+  affected_paths:
+    - ops/**/*
+    - deployment/**/*
+  generation_mode: guided
+  migration_strategy: safe
+  notes:
+    - Operations should be automated and reliable
+
+validation:
+  required_checks:
+    - availability_check
+    - performance_check
+    - reliability_check
+  acceptance_criteria:
+    - Deployment procedures defined
+    - Monitoring configured
+    - Incident response plan in place
+  test_requirements:
+    - deployment_tests
+    - load_tests
+    - disaster_recovery_tests
+  traceability_requirements:
+    - link_to_implementation
+    - link_to_monitoring
+
+agent_directives:
+  required_read_order:
+    - genesis
+    - relevant_standards
+    - this_operational_spec
+  must:
+    - Follow deployment procedures
+    - Monitor system health
+    - Respond to incidents appropriately
+  must_not:
+    - Bypass operational procedures
+    - Ignore monitoring alerts
+    - Deploy without validation
+  completion_requirements:
+    - Systems deployed and running
+    - Monitoring operational
+    - Incident response ready
+
+history:
+  change_reason: initial operational specification
+  previous_version: null
+  change_type: additive
+  approved_by:
+    - {{owner}}
+  review_ref: null
+  notes:
+    - Initial operational framework

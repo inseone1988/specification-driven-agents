@@ -1,0 +1,135 @@
+# Validation Specification: {{title}}
+#
+# Validation specifications define how a system or component must be verified,
+# including testing strategies, quality gates, and acceptance criteria.
+
+meta:
+  id: {{id}}
+  title: {{title}}
+  type: validation
+  version: 0.1.0
+  contract_version: 0.1.0
+  compatibility:
+    supported_from: 0.1.0
+    deprecated_after: null  # Set date when this validation spec should be deprecated
+  status: draft  # draft | review | approved | implemented | deprecated | archived
+  owner: {{owner}}
+  created_at: {{date}}
+  updated_at: {{date}}
+  tags: []  # e.g., ["testing", "qa", "acceptance", "performance"]
+
+authority:
+  level: implementation
+  inherits_from:
+    - genesis
+    - relevant_standards
+  depends_on: []
+  supersedes: []
+  conflicts_with: []
+
+purpose:
+  summary: {{summary}}
+  problem: |
+    [Describe the validation problem being solved]
+  scope:
+    includes:
+      - validation rules and criteria
+      - testing requirements
+      - quality gates
+    excludes:
+      - implementation details
+      - business logic
+      - operational concerns
+  non_goals:
+    - [List validation aspects not covered]
+
+context:
+  bounded_context: validation
+  actors:
+    - quality-engineers
+    - developers
+    - testers
+  capabilities:
+    - define validation criteria
+    - enforce quality standards
+    - verify specification compliance
+  constraints:
+    - validation must be automated when possible
+    - criteria must be measurable
+    - results must be reproducible
+
+contracts:
+  invariants:
+    - validation must be consistent
+    - criteria must be objective
+    - results must be actionable
+  
+  validations:
+    - validation_rule_validation
+    - test_coverage_validation
+    - quality_gate_validation
+  
+  entities: []
+  commands: []
+  queries: []
+  events: []
+  permissions:
+    - quality_team_can_define_criteria
+    - developers_must_pass_validation
+
+implementation:
+  targets:
+    - tests/
+    - validation/
+  affected_paths:
+    - tests/**/*
+    - validation/**/*
+  generation_mode: guided
+  migration_strategy: safe
+  notes:
+    - Validation should be automated and repeatable
+
+validation:
+  required_checks:
+    - criteria_clarity
+    - automation_feasibility
+    - result_actionability
+  acceptance_criteria:
+    - Validation criteria clearly defined
+    - Automation possible
+    - Results are actionable
+  test_requirements:
+    - validation_tests
+    - automation_tests
+    - coverage_tests
+  traceability_requirements:
+    - link_to_validated_specs
+    - link_to_implementation
+
+agent_directives:
+  required_read_order:
+    - genesis
+    - relevant_standards
+    - this_validation_spec
+  must:
+    - Enforce validation criteria
+    - Generate validation tests
+    - Report validation results
+  must_not:
+    - Bypass validation steps
+    - Accept invalid implementations
+    - Create subjective criteria
+  completion_requirements:
+    - All validation criteria met
+    - Tests passing
+    - Quality gates passed
+
+history:
+  change_reason: initial validation specification
+  previous_version: null
+  change_type: additive
+  approved_by:
+    - {{owner}}
+  review_ref: null
+  notes:
+    - Initial validation framework

@@ -1,0 +1,135 @@
+# Migration Specification: {{title}}
+#
+# Migration specifications define safe structural changes to persistence
+# layers, data transformations, and schema evolution strategies.
+
+meta:
+  id: {{id}}
+  title: {{title}}
+  type: migration
+  version: 0.1.0
+  contract_version: 0.1.0
+  compatibility:
+    supported_from: 0.1.0
+    deprecated_after: null  # Set date when this migration spec should be deprecated
+  status: draft  # draft | review | approved | implemented | deprecated | archived
+  owner: {{owner}}
+  created_at: {{date}}
+  updated_at: {{date}}
+  tags: []  # e.g., ["database", "schema", "data-migration", "breaking-change"]
+
+authority:
+  level: implementation
+  inherits_from:
+    - genesis
+    - relevant_standards
+  depends_on: []
+  supersedes: []
+  conflicts_with: []
+
+purpose:
+  summary: {{summary}}
+  problem: |
+    [Describe the data/structure migration problem being solved]
+  scope:
+    includes:
+      - database schema changes
+      - data transformations
+      - state migration steps
+    excludes:
+      - business logic changes
+      - API changes
+      - UI changes
+  non_goals:
+    - [List migration aspects not covered]
+
+context:
+  bounded_context: migration
+  actors:
+    - database-administrators
+    - developers
+    - deployment-engineers
+  capabilities:
+    - modify database schemas safely
+    - transform existing data
+    - maintain data integrity
+  constraints:
+    - must be reversible when possible
+    - must maintain data integrity
+    - must handle large datasets efficiently
+
+contracts:
+  invariants:
+    - data must not be lost
+    - migration must be reversible when possible
+    - integrity constraints must be maintained
+  
+  validations:
+    - data_integrity_validation
+    - rollback_safety_validation
+    - performance_validation
+  
+  entities: []
+  commands: []
+  queries: []
+  events: []
+  permissions:
+    - administrators_can_execute_migrations
+    - developers_can_author_migrations
+
+implementation:
+  targets:
+    - migrations/
+    - database/
+  affected_paths:
+    - migrations/**/*
+    - database/**/*
+  generation_mode: guided
+  migration_strategy: safe
+  notes:
+    - Migration should be incremental and reversible
+
+validation:
+  required_checks:
+    - rollback_safety
+    - data_integrity
+    - performance_impact
+  acceptance_criteria:
+    - Migration executes successfully
+    - Data integrity maintained
+    - Rollback possible if needed
+  test_requirements:
+    - migration_tests
+    - rollback_tests
+    - data_validation_tests
+  traceability_requirements:
+    - link_to_affected_schemas
+    - link_to_implementation
+
+agent_directives:
+  required_read_order:
+    - genesis
+    - relevant_standards
+    - this_migration_spec
+  must:
+    - Generate safe migration scripts
+    - Include rollback procedures
+    - Validate data integrity
+  must_not:
+    - Create irreversible migrations without justification
+    - Risk data loss
+    - Bypass validation steps
+  completion_requirements:
+    - Migration scripts created
+    - Tests passing
+    - Rollback procedures defined
+
+history:
+  change_reason: initial migration specification
+  previous_version: null
+  change_type: additive
+  approved_by:
+    - {{owner}}
+  review_ref: null
+  notes:
+    - Initial migration plan

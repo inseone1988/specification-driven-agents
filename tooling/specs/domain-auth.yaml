@@ -1,0 +1,262 @@
+# Domain Specification: Auth Domain Specification
+# 
+# This is a Domain-Driven Design (DDD) specification that defines a bounded context
+# with its entities, value objects, aggregates, domain services, and business rules.
+#
+# Domain specifications are technology-agnostic and focus purely on business logic.
+
+meta:
+  id: domain-auth
+  title: Auth Domain Specification
+  type: domain
+  version: 0.1.0
+  contract_version: 0.1.0
+  compatibility:
+    supported_from: 0.1.0
+    deprecated_after: null  # Set date when this spec should be deprecated
+  status: draft  # draft | review | approved | implemented | deprecated | archived
+  owner: lupit
+  created_at: 2026-04-03
+  updated_at: 2026-04-03
+  tags: []  # e.g., ["billing", "user-management", "core-domain"]
+
+authority:
+  level: domain
+  inherits_from:
+    - genesis  # All domains inherit from the genesis specification
+    # Add other domains or standards this domain inherits from
+    # - standard-security
+    # - domain-identity
+  depends_on: []  # Other specs this domain depends on
+    # - domain-payments
+    # - standard-audit-logging
+  supersedes: []  # Previous domain specs this replaces
+  conflicts_with: []  # Other specs that conflict with this domain
+
+purpose:
+  summary: [Brief summary of the domain specification]
+  problem: |
+    [Describe the business problem this domain solves]
+    
+    Example:
+    "Users need to manage their profile information, but current implementation
+    spreads user data across multiple services without clear ownership boundaries."
+  scope:
+    includes:
+      - Business capabilities and logic within this bounded context
+      - Domain entities, value objects, and aggregates
+      - Domain-specific rules, invariants, and constraints
+      - Domain events and commands
+      - Business policies and processes
+    excludes:
+      - Implementation technology choices (databases, frameworks, etc.)
+      - User interface details and presentation logic
+      - Operational concerns (scaling, monitoring, deployment)
+      - Integration with external systems (covered by API specs)
+  non_goals:
+    - [List what this domain spec explicitly does not cover]
+    # Example:
+    # - Authentication and authorization (covered by security spec)
+    # - API design (covered by api spec)
+    # - Database schema (covered by implementation spec)
+
+context:
+  bounded_context: auth  # e.g., "user-management", "order-processing"
+  ubiquitos_language:
+    terms:  # Key domain terms with definitions
+      - term: User
+        definition: A person or system that interacts with the application
+      - term: Profile
+        definition: Collection of user information and preferences
+  actors:
+    - [List primary actors in this domain]
+    # Example:
+    # - name: End User
+    #   role: Interacts with their own profile
+    # - name: Administrator
+    #   role: Manages user accounts
+  capabilities:
+    - [List key capabilities this domain provides]
+    # Example:
+    # - User registration and profile creation
+    # - Profile information management
+    # - User preference management
+  constraints:
+    - [List domain-specific constraints]
+    # Example:
+    # - User email must be unique across the system
+    # - Profile updates must preserve audit trail
+    # - User data must be GDPR compliant
+
+contracts:
+  # Required fields by schema
+  invariants:
+    - [List domain invariants (always true rules)]
+    # Example:
+    # - "User email must be unique across the system"
+    # - "Active user must have valid email address"
+    # - "Suspended users cannot perform actions"
+  
+  validations:
+    - [List domain validations]
+    # Example:
+    # - "User email format validation"
+    # - "Password strength validation"
+    # - "Profile completeness validation"
+
+  # Domain Model (conditional fields for domain type)
+  entities:
+    - [List domain entities with attributes and behaviors]
+    # Example structure:
+    # - name: User
+    #   attributes:
+    #     - id: UUID (required, immutable)
+    #     - email: Email (required, unique)
+    #     - name: String (required)
+    #     - status: Enum[active, suspended, deleted]
+    #   behaviors:
+    #     - register(email, name): Creates new user
+    #     - updateProfile(profileData): Updates user information
+    #     - suspend(reason): Suspends user account
+  
+  value_objects:
+    - [List value objects (immutable, no identity)]
+    # Example:
+    # - name: Email
+    #   validation: Must match email regex pattern
+    # - name: PhoneNumber
+    #   validation: Must be valid international format
+  
+  aggregates:
+    - [List aggregates (consistency boundaries)]
+    # Example:
+    # - root: User
+    #   entities: [User, Profile]
+    #   invariants:
+    #     - User must have exactly one Profile
+    #     - Profile cannot exist without User
+  
+  domain_services:
+    - [List domain services (stateless operations)]
+    # Example:
+    # - name: UserRegistrationService
+    #   responsibility: Coordinates user registration process
+    #   operations:
+    #     - registerUser(email, name): Validates and creates new user
+  
+  commands:
+    - [List domain commands (intent to change state)]
+    # Example:
+    # - name: RegisterUser
+    #   parameters: {email: Email, name: String}
+    #   validation: Email must not exist in system
+    #   produces: UserRegistered event
+  
+  queries:
+    - [List domain queries (intent to read state)]
+    # Example:
+    # - name: GetUserProfile
+    #   parameters: {userId: UUID}
+    #   returns: UserProfileDTO
+  
+  events:
+    - [List domain events (something that happened)]
+    # Example:
+    # - name: UserRegistered
+    #   payload: {userId: UUID, email: Email, timestamp: DateTime}
+    #   subscribers: [EmailService, AnalyticsService]
+  
+  business_rules:
+    - [List business rules (conditional logic)]
+    # Example:
+    # - rule: "Users can update their own profile"
+    #   condition: "actor.userId == profile.userId"
+    # - rule: "Administrators can suspend any user"
+    #   condition: "actor.role == 'admin'"
+  
+  policies:
+    - [List business policies (strategies)]
+    # Example:
+    # - name: PasswordResetPolicy
+    #   description: "Rules for password reset frequency and complexity"
+    #   rules:
+    #     - "Password must be at least 12 characters"
+    #     - "User can reset password once per hour"
+
+implementation:
+  targets:
+    - src/domains/auth/  # Primary implementation directory
+  affected_paths:
+    - src/domains/auth/**/*  # All files in domain directory
+    - tests/domains/auth/**/*  # Domain tests
+    # Add other affected paths as needed
+  generation_mode: guided  # guided | automatic | manual
+  migration_strategy: safe  # safe | breaking | deprecation
+  architectural_patterns:
+    - hexagonal-architecture  # Recommended patterns
+    - domain-driven-design
+    - cqrs  # Optional: Command Query Responsibility Segregation
+    - event-sourcing  # Optional: Event Sourcing
+  technology_constraints:
+    - language-agnostic  # Domain logic should not depend on specific tech
+    - framework-agnostic
+  notes:
+    - Domain logic should be technology-agnostic
+    - Use dependency inversion for external concerns
+    - Keep aggregates small and focused
+
+validation:
+  required_checks:
+    - genesis_compliance  # Must comply with genesis principles
+    - standard_compliance  # Must comply with relevant standards
+    - bounded_context_clarity  # Clear boundary definition
+    - ubiquitous_language  # Consistent domain terminology
+  acceptance_criteria:
+    - Clear bounded context definition with explicit boundaries
+    - Domain entities and relationships properly defined
+    - Business rules and invariants clearly articulated
+    - Commands, queries, and events identified
+    - Ubiquitous language established
+  test_requirements:
+    - domain_model_tests  # Unit tests for domain objects
+    - business_rule_tests  # Tests for business rules
+    - aggregate_invariant_tests  # Tests for aggregate invariants
+    - integration_tests  # Tests for domain service integration
+  traceability_requirements:
+    - link_to_genesis  # Must reference genesis specification
+    - link_to_governing_standards  # Must reference applicable standards
+    - dependency_traceability  # All dependencies must be declared
+
+agent_directives:
+  required_read_order:
+    - genesis  # First, understand the overall vision
+    - relevant_standards  # Then, applicable standards
+    - this_domain_spec  # Finally, this domain specification
+  must:
+    - Respect domain boundaries and context maps
+    - Enforce domain invariants and business rules
+    - Follow ubiquitous language consistently
+    - Preserve aggregate consistency boundaries
+    - Handle domain events appropriately
+  must_not:
+    - Violate domain invariants
+    - Cross domain boundaries without explicit contracts
+    - Introduce technology dependencies in domain logic
+    - Create circular dependencies between domains
+  completion_requirements:
+    - Domain model fully defined with entities, value objects, aggregates
+    - Business rules and invariants clearly articulated
+    - Domain boundaries respected and documented
+    - Commands, queries, and events identified
+    - Ubiquitous language established and used consistently
+
+history:
+  change_reason: initial domain specification
+  previous_version: null
+  change_type: additive  # additive | breaking | deprecation | correction | refactor
+  approved_by:
+    - lupit
+  review_ref: null  # Reference to review discussion
+  notes:
+    - Initial domain definition
+    # Add other notes as needed

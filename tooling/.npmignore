@@ -1,0 +1,52 @@
+# Source files
+src/
+tests/
+
+# Development files
+tsconfig.json
+tsup.config.ts
+vitest.config.ts
+.eslintrc.json
+.prettierrc.json
+
+# Build configurations
+*.config.*
+*.test.*
+*.spec.*
+
+# Documentation
+MEMORY.md
+CHECKLIST.md
+BUILD.md
+*.md
+
+# Temporary files
+tmp/
+temp/
+test-output/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Test outputs
+coverage/
+test-results/

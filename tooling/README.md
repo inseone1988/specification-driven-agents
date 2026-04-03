@@ -1,0 +1,245 @@
+# Specification-Driven Agents CLI
+
+A command-line tool for generating, validating, and managing specification contracts following the Specification-Driven Agents framework.
+
+## Installation
+
+### Global installation (recommended for CLI usage):
+```bash
+npm install -g spec-driven-agents
+```
+
+### Local installation (for project dependencies):
+```bash
+npm install --save-dev spec-driven-agents
+```
+
+### Development installation (from local source):
+```bash
+cd /path/to/specification-driven-agents/tooling
+npm install -g .
+```
+
+## Quick Start
+
+```bash
+# Initialize a new project with specification structure
+sda init
+
+# Generate a new specification
+sda generate domain user-management
+sda generate standard security-rules
+sda generate api authentication
+
+# Validate a specification
+sda validate specs/domain-user-management.yaml
+
+# Validate entire project
+sda validate-project
+
+# Resolve authority hierarchy
+sda resolve domain-user-management
+
+# Update specification status
+sda status domain-user-management approved
+```
+
+## Available Commands
+
+### `sda init`
+Initialize a new project with the Specification-Driven Agents structure.
+
+### `sda generate <type> <name>`
+Generate a new specification from template.
+
+**Types:** `genesis`, `standard`, `domain`, `implementation`, `api`, `migration`, `security`, `validation`, `operational`, `task-change`
+
+**Options:**
+- `-o, --output <path>`: Output path for generated spec
+- `-f, --force`: Overwrite existing file
+- `-v, --values <values>`: Additional values as JSON string
+
+**Examples:**
+```bash
+sda generate domain user-auth
+sda generate standard coding-standards -o ./standards/code.yaml
+sda generate api products --values '{"version":"v1","owner":"api-team"}'
+```
+
+### `sda validate <path>`
+Validate a specification against the contract schema.
+
+**Options:**
+- `-s, --strict`: Enable strict validation
+- `-j, --json`: Output as JSON
+
+### `sda validate-project`
+Validate all specifications in the project.
+
+**Options:**
+- `-p, --path <path>`: Project path (default: ".")
+- `-r, --recursive`: Recursive validation
+
+### `sda resolve <spec-id>`
+Resolve authority hierarchy and dependencies.
+
+**Options:**
+- `-d, --depth <number>`: Maximum depth for resolution (default: 3)
+- `-g, --graph`: Output as graph format
+
+### `sda status <spec-id> <status>`
+Update specification lifecycle status.
+
+**Status values:** `draft`, `review`, `approved`, `implemented`, `deprecated`, `archived`
+
+**Options:**
+- `-m, --message <message>`: Status change message
+
+### `sda graph`
+Generate dependency graph of specifications.
+
+**Options:**
+- `-o, --output <format>`: Output format (`dot`, `json`, `mermaid`) (default: "dot")
+- `-f, --file <path>`: Output file path
+
+## Specification Types and Formats
+
+The framework supports 10 types of specifications with strict format rules:
+
+### 1. **`genesis`** - Root narrative and architectural entry point
+   - **Format:** `.md` (Markdown)
+   - **Purpose:** Human-readable vision document, project philosophy, core constraints
+   - **Structure:** Narrative text with optional YAML frontmatter for metadata
+   - **Rule:** Never executable YAML contract, only guidance document
+
+### 2. **`standard`** - Global engineering laws and cross-cutting rules
+   - **Format:** `.yaml`
+   - **Purpose:** Executable contracts for cross-cutting concerns
+   - **Structure:** Valid YAML against specification-contract schema
+
+### 3. **`domain`** - Bounded context or core business capability
+   - **Format:** `.yaml`
+   - **Purpose:** Executable contracts for business domains
+   - **Structure:** Valid YAML against specification-contract schema
+
+### 4. **`implementation`** - Concrete realization details for code
+   - **Format:** `.yaml`
+   - **Purpose:** Executable contracts for implementation details
+   - **Structure:** Valid YAML against specification-contract schema
+
+### 5. **`api`** - Interface contracts for endpoints
+   - **Format:** `.yaml`
+   - **Purpose:** Executable contracts for API interfaces
+   - **Structure:** Valid YAML against specification-contract schema
+
+### 6. **`migration`** - Safe structural changes to persistence layers
+   - **Format:** `.yaml`
+   - **Purpose:** Executable contracts for data migrations
+   - **Structure:** Valid YAML against specification-contract schema
+
+### 7. **`security`** - Security controls, trust boundaries, threat assumptions
+   - **Format:** `.yaml`
+   - **Purpose:** Executable contracts for security requirements
+   - **Structure:** Valid YAML against specification-contract schema
+
+### 8. **`validation`** - How a system must be verified
+   - **Format:** `.yaml`
+   - **Purpose:** Executable contracts for validation rules
+   - **Structure:** Valid YAML against specification-contract schema
+
+### 9. **`operational`** - Runtime, deployment, monitoring requirements
+   - **Format:** `.yaml`
+   - **Purpose:** Executable contracts for operational concerns
+   - **Structure:** Valid YAML against specification-contract schema
+
+### 10. **`task-change`** - Focused change tied to one unit of delivery
+   - **Format:** `.yaml`
+   - **Purpose:** Executable contracts for specific task changes
+   - **Structure:** Valid YAML against specification-contract schema
+
+**Format Rule:** Only `genesis` uses `.md`, all other types use `.yaml`
+
+## Project Structure
+
+A typical Specification-Driven Agents project:
+
+```
+my-project/
+├── specs/                    # Specification contracts
+│   ├── genesis.yaml         # Root specification
+│   ├── standards/           # Engineering standards
+│   │   ├── security.yaml
+│   │   └── coding.yaml
+│   ├── domains/             # Business domains
+│   │   ├── identity.yaml
+│   │   └── billing.yaml
+│   └── implementations/     # Implementation specs
+│       └── api-v1.yaml
+├── schemas/                 # Contract schemas
+│   └── specification-contract.schema.yaml
+└── .sda-config.yaml        # Tool configuration
+```
+
+## Configuration
+
+Create `.sda-config.yaml` in your project root:
+
+```yaml
+# .sda-config.yaml
+specsDir: ./specs
+templatesDir: ./templates
+schemasDir: ./schemas
+defaultOwner: ${USER}
+validation:
+  strict: false
+  autoFix: false
+generation:
+  defaultOutput: ./specs
+  askForValues: true
+```
+
+## Philosophy
+
+Specification-Driven Agents proposes a "contract-first" approach to software development where:
+
+1. **Architecture before implementation** - Define contracts before writing code
+2. **Explicit authority and inheritance** - Clear hierarchy of specifications
+3. **Traceable relationships** - Every change is tracked from intention to implementation
+4. **Validation before change** - Automated validation ensures contract compliance
+5. **Human+AI collaboration** - Structured contracts enable effective AI assistance
+
+## Development
+
+```bash
+# Clone and setup
+git clone https://github.com/inseone1988/specification-driven-agents.git
+cd specification-driven-agents/tooling
+
+# Install dependencies
+npm install
+
+# Build the project
+npm run build
+
+# Run tests
+npm test
+
+# Link for local development
+npm link
+
+# Test locally
+sda --help
+```
+
+## License
+
+MIT - See [LICENSE](LICENSE) file for details.
+
+## Contributing
+
+Contributions are welcome! Please see the [main repository](https://github.com/inseone1988/specification-driven-agents) for contribution guidelines.
+
+## Support
+
+- [GitHub Issues](https://github.com/inseone1988/specification-driven-agents/issues)
+- [Documentation](https://github.com/inseone1988/specification-driven-agents)

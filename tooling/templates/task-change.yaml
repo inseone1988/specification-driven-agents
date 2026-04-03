@@ -1,0 +1,135 @@
+# Task Change Specification: {{title}}
+#
+# Task change specifications define focused changes tied to one unit of
+# delivery, such as a bug fix, feature implementation, or refactoring.
+
+meta:
+  id: {{id}}
+  title: {{title}}
+  type: task-change
+  version: 0.1.0
+  contract_version: 0.1.0
+  compatibility:
+    supported_from: 0.1.0
+    deprecated_after: null  # Set date when this task-change spec should be deprecated
+  status: draft  # draft | review | approved | implemented | deprecated | archived
+  owner: {{owner}}
+  created_at: {{date}}
+  updated_at: {{date}}
+  tags: []  # e.g., ["bug-fix", "feature", "refactor", "hotfix"]
+
+authority:
+  level: task-change
+  inherits_from:
+    - genesis
+    - relevant_standards
+    - relevant_domains
+  depends_on: []
+  supersedes: []
+  conflicts_with: []
+
+purpose:
+  summary: {{summary}}
+  problem: |
+    [Describe the specific task or change being implemented]
+  scope:
+    includes:
+      - specific implementation task
+      - focused change scope
+      - deliverable definition
+    excludes:
+      - unrelated changes
+      - broad architectural decisions
+      - multiple independent tasks
+  non_goals:
+    - [List what this task-change does not cover]
+
+context:
+  bounded_context: task-implementation
+  actors:
+    - developer
+    - reviewer
+    - product-owner
+  capabilities:
+    - implement focused change
+    - deliver specific functionality
+    - maintain code quality
+  constraints:
+    - must be completed within timeframe
+    - must not break existing functionality
+    - must follow established patterns
+
+contracts:
+  invariants:
+    - change must be focused and deliverable
+    - existing functionality must not be broken
+    - code quality must be maintained
+  
+  validations:
+    - scope_validation
+    - quality_validation
+    - integration_validation
+  
+  entities: []
+  commands: []
+  queries: []
+  events: []
+  permissions:
+    - developer_can_implement
+    - reviewer_can_approve
+
+implementation:
+  targets:
+    - [Specific files or modules]
+  affected_paths:
+    - [Paths affected by this change]
+  generation_mode: guided
+  migration_strategy: safe
+  notes:
+    - This is a focused, deliverable task
+
+validation:
+  required_checks:
+    - scope_compliance
+    - quality_check
+    - integration_check
+  acceptance_criteria:
+    - Task completed as defined
+    - Code quality maintained
+    - Existing functionality preserved
+  test_requirements:
+    - unit_tests
+    - integration_tests
+    - regression_tests
+  traceability_requirements:
+    - link_to_parent_specs
+    - link_to_implementation
+
+agent_directives:
+  required_read_order:
+    - genesis
+    - relevant_standards
+    - relevant_domains
+    - this_task_change_spec
+  must:
+    - Implement focused change only
+    - Maintain code quality
+    - Preserve existing functionality
+  must_not:
+    - Expand scope beyond defined task
+    - Introduce technical debt
+    - Break existing tests
+  completion_requirements:
+    - Task implemented
+    - Tests passing
+    - Code review approved
+
+history:
+  change_reason: initial task-change specification
+  previous_version: null
+  change_type: additive
+  approved_by:
+    - {{owner}}
+  review_ref: null
+  notes:
+    - Focused implementation task

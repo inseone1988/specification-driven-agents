@@ -1,0 +1,117 @@
+meta:
+  id: domain-test-spec
+  title: Test Spec Domain Specification
+  type: domain
+  version: 0.1.0
+  contract_version: 0.1.0
+  compatibility:
+    supported_from: 0.1.0
+    deprecated_after: null
+  status: draft
+  owner: lupit
+  created_at: 2026-04-03
+  updated_at: 2026-04-03
+  tags: []
+
+authority:
+  level: domain
+  inherits_from:
+    - genesis
+  depends_on: []
+  supersedes: []
+  conflicts_with: []
+
+purpose:
+  summary: [Brief summary of the domain specification]
+  problem: |
+    [Describe the business problem this domain solves]
+  scope:
+    includes:
+      - business capabilities and logic
+      - domain entities and relationships
+      - domain-specific rules and constraints
+    excludes:
+      - implementation technology choices
+      - user interface details
+      - operational concerns
+  non_goals:
+    - [List what this domain spec explicitly does not cover]
+
+context:
+  bounded_context: test-spec
+  actors:
+    - [List primary actors in this domain]
+  capabilities:
+    - [List key capabilities this domain provides]
+  constraints:
+    - [List domain-specific constraints]
+
+contracts:
+  entities:
+    - [List domain entities]
+  commands:
+    - [List domain commands]
+  queries:
+    - [List domain queries]
+  events:
+    - [List domain events]
+  invariants:
+    - [List domain invariants]
+  validations:
+    - [List domain validations]
+  permissions:
+    - [List domain permissions]
+
+implementation:
+  targets:
+    - src/domains/test-spec/
+  affected_paths:
+    - src/domains/test-spec/**/*
+    - tests/domains/test-spec/**/*
+  generation_mode: guided
+  migration_strategy: safe
+  notes:
+    - Domain logic should be technology-agnostic
+
+validation:
+  required_checks:
+    - genesis_compliance
+    - standard_compliance
+    - bounded_context_clarity
+  acceptance_criteria:
+    - Clear bounded context definition
+    - Domain entities and relationships defined
+    - Business rules articulated
+  test_requirements:
+    - domain_model_tests
+    - business_rule_tests
+  traceability_requirements:
+    - link_to_genesis
+    - link_to_governing_standards
+
+agent_directives:
+  required_read_order:
+    - genesis
+    - relevant_standards
+    - this_domain_spec
+  must:
+    - Respect domain boundaries
+    - Enforce domain invariants
+    - Follow domain-specific rules
+  must_not:
+    - Violate domain invariants
+    - Cross domain boundaries without explicit contracts
+  completion_requirements:
+    - Domain model fully defined
+    - Business rules clearly articulated
+    - Boundaries respected
+
+history:
+  change_reason: initial domain specification
+  previous_version: null
+  change_type: additive
+  approved_by:
+    - lupit
+  review_ref: null
+  notes:
+    - Initial domain definition

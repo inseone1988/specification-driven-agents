@@ -1,0 +1,120 @@
+meta:
+  id: standard-coding-rules
+  title: Coding Rules Standard Specification
+  type: standard
+  version: 0.1.0
+  contract_version: 0.1.0
+  compatibility:
+    supported_from: 0.1.0
+    deprecated_after: null
+  status: draft
+  owner: lupit
+  created_at: 2026-04-03
+  updated_at: 2026-04-03
+  tags: []
+
+authority:
+  level: standard
+  inherits_from:
+    - genesis
+  depends_on: []
+  supersedes: []
+  conflicts_with: []
+
+purpose:
+  summary: [Brief summary of the standard specification]
+  problem: |
+    [Describe the cross-cutting problem this standard solves]
+  scope:
+    includes:
+      - engineering rules and conventions
+      - cross-cutting concerns
+      - global constraints
+    excludes:
+      - domain-specific logic
+      - implementation details
+      - business rules
+  non_goals:
+    - [List what this standard does not cover]
+
+context:
+  bounded_context: engineering-standards
+  actors:
+    - developers
+    - architects
+    - ai-agents
+  capabilities:
+    - enforce engineering conventions
+    - define cross-cutting rules
+    - provide global constraints
+  constraints:
+    - must be technically enforceable
+    - must not contradict genesis
+    - must be clear and testable
+
+contracts:
+  entities: []
+  commands: []
+  queries: []
+  events: []
+  invariants:
+    - all implementations must comply with this standard
+    - domain specs may refine but not contradict this standard
+  validations:
+    - compliance validation
+    - contradiction detection
+  permissions:
+    - architects_can_modify_standards
+    - developers_must_comply_with_standards
+
+implementation:
+  targets:
+    - engineering-standards.md
+  affected_paths:
+    - src/**/*
+    - tests/**/*
+  generation_mode: guided
+  migration_strategy: safe
+  notes:
+    - This standard applies to all implementation work
+
+validation:
+  required_checks:
+    - genesis_compliance
+    - technical_enforceability
+    - clarity_test
+  acceptance_criteria:
+    - Rules are technically enforceable
+    - No contradictions with genesis
+    - Clear compliance criteria
+  test_requirements:
+    - compliance_test_suite
+    - contradiction_detection_test
+  traceability_requirements:
+    - link_to_genesis
+    - link_to_affected_domains
+
+agent_directives:
+  required_read_order:
+    - genesis
+    - this_standard
+  must:
+    - Enforce standard rules in all implementations
+    - Check for standard compliance
+    - Report violations
+  must_not:
+    - Create implementations that violate standards
+    - Ignore standard constraints
+  completion_requirements:
+    - All implementations comply with standard
+    - No standard violations detected
+
+history:
+  change_reason: initial standard specification
+  previous_version: null
+  change_type: additive
+  approved_by:
+    - lupit
+  review_ref: null
+  notes:
+    - Initial engineering standard

@@ -1,0 +1,134 @@
+# Security Specification: {{title}}
+#
+# Security specifications define security controls, trust boundaries,
+# threat assumptions, and compliance requirements for the system.
+
+meta:
+  id: {{id}}
+  title: {{title}}
+  type: security
+  version: 0.1.0
+  contract_version: 0.1.0
+  compatibility:
+    supported_from: 0.1.0
+    deprecated_after: null  # Set date when this security spec should be deprecated
+  status: draft  # draft | review | approved | implemented | deprecated | archived
+  owner: {{owner}}
+  created_at: {{date}}
+  updated_at: {{date}}
+  tags: []  # e.g., ["authentication", "authorization", "data-protection", "compliance"]
+
+authority:
+  level: standard
+  inherits_from:
+    - genesis
+  depends_on: []
+  supersedes: []
+  conflicts_with: []
+
+purpose:
+  summary: {{summary}}
+  problem: |
+    [Describe the security problem being addressed]
+  scope:
+    includes:
+      - authentication and authorization
+      - data protection and encryption
+      - threat modeling and mitigation
+      - compliance requirements
+    excludes:
+      - implementation details
+      - operational monitoring
+      - business logic
+  non_goals:
+    - [List security aspects not covered]
+
+context:
+  bounded_context: security
+  actors:
+    - security-engineers
+    - developers
+    - auditors
+  capabilities:
+    - enforce security policies
+    - protect sensitive data
+    - mitigate security threats
+  constraints:
+    - must comply with regulatory requirements
+    - must follow security best practices
+    - must be auditable
+
+contracts:
+  invariants:
+    - sensitive data must be protected
+    - access must be properly authorized
+    - security controls must be enforceable
+  
+  validations:
+    - security_control_validation
+    - compliance_validation
+    - threat_model_validation
+  
+  entities: []
+  commands: []
+  queries: []
+  events: []
+  permissions:
+    - security_team_can_modify_policies
+    - developers_must_comply_with_security
+
+implementation:
+  targets:
+    - security/
+    - src/**/*
+  affected_paths:
+    - security/**/*
+    - src/**/*
+  generation_mode: guided
+  migration_strategy: safe
+  notes:
+    - Security is a cross-cutting concern
+
+validation:
+  required_checks:
+    - compliance_check
+    - security_control_check
+    - threat_model_check
+  acceptance_criteria:
+    - Security controls defined
+    - Compliance requirements met
+    - Threat model documented
+  test_requirements:
+    - security_tests
+    - penetration_tests
+    - compliance_audits
+  traceability_requirements:
+    - link_to_genesis
+    - link_to_all_implementations
+
+agent_directives:
+  required_read_order:
+    - genesis
+    - this_security_spec
+  must:
+    - Enforce security controls
+    - Check for security compliance
+    - Report security violations
+  must_not:
+    - Bypass security controls
+    - Expose sensitive data
+    - Violate compliance requirements
+  completion_requirements:
+    - All security controls implemented
+    - Compliance verified
+    - Security audit passed
+
+history:
+  change_reason: initial security specification
+  previous_version: null
+  change_type: additive
+  approved_by:
+    - {{owner}}
+  review_ref: null
+  notes:
+    - Initial security framework
