@@ -1,0 +1,112 @@
+meta:
+  id: standard-coding
+  title: API Coding Standards
+  type: standard
+  version: 0.1.0
+  contract_version: 0.1.0
+  compatibility:
+    supported_from: 0.1.0
+    deprecated_after: null
+  status: approved
+  owner: api-team
+  created_at: 2026-01-01
+  updated_at: 2026-01-01
+  tags: [coding, standards, naming, api]
+
+authority:
+  level: standard
+  inherits_from:
+    - genesis
+  depends_on: []
+  supersedes: []
+  conflicts_with: []
+
+purpose:
+  summary: Coding conventions and naming standards for API development
+  problem: |
+    Inconsistent naming and formatting make code hard to read and maintain.
+    We need consistent standards across all API code.
+  scope:
+    includes:
+      - Endpoint naming conventions
+      - Response format standards
+      - Error response structure
+      - HTTP method usage
+    excludes:
+      - Database schema naming (handled by DB standards)
+      - Internal variable naming (team discretion)
+
+context:
+  bounded_context: API Coding Standards
+  actors:
+    - name: API Developers
+      role: Implement API endpoints
+  capabilities:
+    - Define endpoint naming
+    - Standardize responses
+  constraints:
+    - RESTful principles must be followed
+
+contracts:
+  invariants:
+    - "All endpoints follow REST conventions"
+    - "All responses use JSON"
+    - "Error responses follow standard format"
+  
+  validations:
+    - "Linting passes"
+    - "OpenAPI spec is valid"
+
+  naming_conventions:
+    endpoints:
+      pattern: kebab-case
+      examples:
+        - /product-categories (not /productCategories)
+        - /order-items (not /orderItems)
+    resources:
+      singular: false
+      examples:
+        - /products (not /product)
+        - /users (not /user)
+    
+  response_format:
+    success:
+      structure: "{ data, meta?, links? }"
+      example:
+        data: "[{ id, name, price }]"
+        meta: "{ total, page, limit }"
+    error:
+      structure: "{ error: { code, message, details? } }"
+      http_status_codes:
+        200: Success
+        201: Created
+        400: Bad Request
+        401: Unauthorized
+        403: Forbidden
+        404: Not Found
+        500: Internal Error
+
+implementation:
+  targets:
+    - all-api-endpoints
+  affected_paths:
+    - src/routes/
+    - src/controllers/
+  generation_mode: manual
+  migration_strategy: safe
+
+validation:
+  required_checks:
+    - Linting passes
+    - OpenAPI spec generated
+  acceptance_criteria:
+    - All endpoints follow REST conventions
+    - Response format matches standard
+  traceability_requirements:
+    - Links to linting config
+
+history:
+  change_reason: Initial coding standards
+  previous_version: null
+  change_type: created
+  approved_by: [api-team]

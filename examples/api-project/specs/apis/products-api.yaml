@@ -1,0 +1,203 @@
+meta:
+  id: api-products
+  title: Products API
+  type: api
+  version: 0.1.0
+  contract_version: 0.1.0
+  compatibility:
+    supported_from: 0.1.0
+    deprecated_after: null
+  status: draft
+  owner: api-team
+  created_at: 2026-01-01
+  updated_at: 2026-01-01
+  tags: [api, products, catalog]
+
+authority:
+  level: api
+  inherits_from:
+    - genesis
+    - standard-security
+    - standard-coding
+    - domain-catalog
+  depends_on: []
+  supersedes: []
+  conflicts_with: []
+
+purpose:
+  summary: REST API for product catalog management
+  problem: |
+    Applications need a reliable way to create, read, update, and delete
+    products, as well as manage product categories.
+  scope:
+    includes:
+      - CRUD operations for products
+      - CRUD operations for categories
+      - Search and filtering
+      - Pagination
+    excludes:
+      - Image upload (handled by media service)
+      - Inventory tracking (separate API)
+      - Pricing engine (separate API)
+
+context:
+  bounded_context: Products API
+  actors:
+    - name: Mobile App
+      role: Consumes product data
+    - name: Admin Dashboard
+      role: Manages products
+  capabilities:
+    - Fetch product list with pagination
+    - Search products by query
+    - Filter by category, price range
+    - CRUD operations for products
+  constraints:
+    - Response time < 200ms for reads
+    - Support 1000 concurrent users
+
+contracts:
+  invariants:
+    - "All endpoints return JSON"
+    - "All endpoints require authentication (except /health)"
+    - "All responses follow standard format"
+  
+  validations:
+    - "OpenAPI spec is valid"
+    - "Response schema matches entity definition"
+
+  endpoints:
+    - path: /products
+      method: GET
+      description: List products with pagination
+      parameters:
+        - name: page
+          in: query
+          type: integer
+          default: 1
+        - name: limit
+          in: query
+          type: integer
+          default: 20
+          max: 100
+        - name: category
+          in: query
+          type: string
+        - name: search
+          in: query
+          type: string
+      responses:
+        200:
+          description: Success
+          body:
+            data: Product[]
+            meta:
+              total: integer
+              page: integer
+              limit: integer
+    
+    - path: /products/{id}
+      method: GET
+      description: Get single product
+      parameters:
+        - name: id
+          in: path
+          type: UUID
+          required: true
+      responses:
+        200:
+          description: Success
+          body: Product
+        404:
+          description: Product not found
+    
+    - path: /products
+      method: POST
+      description: Create new product
+      body: CreateProductRequest
+      responses:
+        201:
+          description: Created
+          body: Product
+        400:
+          description: Validation error
+    
+    - path: /products/{id}
+      method: PUT
+      description: Update product
+      parameters:
+        - name: id
+          in: path
+          type: UUID
+          required: true
+      body: UpdateProductRequest
+      responses:
+        200:
+          description: Success
+          body: Product
+    
+    - path: /products/{id}
+      method: DELETE
+      description: Delete product
+      responses:
+        204:
+          description: Deleted
+
+    - path: /categories
+      method: GET
+      description: List all categories
+      responses:
+        200:
+          description: Success
+          body: Category[]
+
+    - path: /categories/{id}
+      method: GET
+      description: Get category with products
+      responses:
+        200:
+          description: Success
+          body: Category
+
+    - path: /categories
+      method: POST
+      description: Create category
+      responses:
+        201:
+          description: Created
+          body: Category
+
+implementation:
+  targets:
+    - Express.js routes
+    - PostgreSQL database
+  affected_paths:
+    - src/routes/product-routes.ts
+    - src/routes/category-routes.ts
+    - src/controllers/product-controller.ts
+    - src/controllers/category-controller.ts
+  generation_mode: manual
+  migration_strategy: safe
+
+validation:
+  required_checks:
+    - All endpoints return expected status codes
+    - Pagination works correctly
+    - Search returns relevant results
+    - Authentication blocks unauthorized access
+  acceptance_criteria:
+    - GET /products returns product list
+    - POST /products creates product
+    - PUT /products/{id} updates product
+    - DELETE /products/{id} removes product
+    - Unauthorized requests return 401
+  traceability_requirements:
+    - Links to domain-catalog
+    - Links to standard-security
+    - Links to standard-coding
+
+history:
+  change_reason: Initial API specification
+  previous_version: null
+  change_type: created
+  approved_by: [api-team]

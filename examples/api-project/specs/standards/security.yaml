@@ -1,0 +1,126 @@
+meta:
+  id: standard-security
+  title: API Security Standards
+  type: standard
+  version: 0.1.0
+  contract_version: 0.1.0
+  compatibility:
+    supported_from: 0.1.0
+    deprecated_after: null
+  status: approved
+  owner: security-team
+  created_at: 2026-01-01
+  updated_at: 2026-01-01
+  tags: [security, authentication, authorization]
+
+authority:
+  level: standard
+  inherits_from:
+    - genesis
+  depends_on: []
+  supersedes: []
+  conflicts_with: []
+
+purpose:
+  summary: Security requirements for all API endpoints
+  problem: |
+    APIs face constant security threats. We need consistent security
+    practices across all endpoints to protect user data and system integrity.
+  scope:
+    includes:
+      - Authentication requirements
+      - Authorization rules
+      - Input validation
+      - HTTPS enforcement
+      - Rate limiting
+    excludes:
+      - Database-level security (handled by DB team)
+      - Network infrastructure (handled by DevOps)
+  non_goals:
+    - OAuth2 implementation details (handled by auth service)
+
+context:
+  bounded_context: API Security Standards
+  actors:
+    - name: API Consumers
+      role: Applications and services making API requests
+    - name: Security Team
+      role: Defines and reviews security requirements
+  capabilities:
+    - Enforce authentication on all endpoints
+    - Validate input to prevent injection attacks
+    - Rate limit to prevent abuse
+  constraints:
+    - All endpoints must use HTTPS
+    - No sensitive data in URLs or query parameters
+    - JWT tokens must expire within 24 hours
+
+contracts:
+  invariants:
+    - "All endpoints must require authentication except /health"
+    - "All requests must be over HTTPS"
+    - "Input must be validated against defined schemas"
+  
+  validations:
+    - "Security audit passes"
+    - "No hardcoded credentials"
+    - "Dependencies are up to date"
+
+  security_requirements:
+    authentication:
+      type: JWT Bearer Token
+      issuer: api-auth-service
+      expiry: 24h
+      required_for_all_endpoints: true
+      exceptions:
+        - /health
+        - /metrics
+    
+    authorization:
+      method: Role-Based Access Control
+      roles:
+        - admin: Full access
+        - user: Read and write own resources
+        - guest: Read-only access
+    
+    input_validation:
+      enabled: true
+      rules:
+        - Sanitize all string inputs
+        - Validate types match schema
+        - Reject unexpected fields
+    
+    rate_limiting:
+      enabled: true
+      default: 100 requests/minute
+      authenticated: 1000 requests/minute
+
+implementation:
+  targets:
+    - all-api-endpoints
+  affected_paths:
+    - src/middleware/auth.ts
+    - src/middleware/rateLimit.ts
+    - src/middleware/validation.ts
+  generation_mode: manual
+  migration_strategy: safe
+
+validation:
+  required_checks:
+    - Security headers present
+    - JWT validation on protected routes
+    - Input sanitization logs
+  acceptance_criteria:
+    - All endpoints reject unauthenticated requests (except /health)
+    - Invalid tokens return 401
+    - Rate limit returns 429 when exceeded
+  traceability_requirements:
+    - Links to security review
+    - Links to penetration test results
+    - Links to OWASP compliance checklist
+
+history:
+  change_reason: Initial security standards
+  previous_version: null
+  change_type: created
+  approved_by: [security-team]

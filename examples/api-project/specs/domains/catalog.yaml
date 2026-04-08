@@ -1,0 +1,144 @@
+meta:
+  id: domain-catalog
+  title: Product Catalog Domain
+  type: domain
+  version: 0.1.0
+  contract_version: 0.1.0
+  compatibility:
+    supported_from: 0.1.0
+    deprecated_after: null
+  status: approved
+  owner: catalog-team
+  created_at: 2026-01-01
+  updated_at: 2026-01-01
+  tags: [catalog, products, domain]
+
+authority:
+  level: domain
+  inherits_from:
+    - genesis
+  depends_on: []
+  supersedes: []
+  conflicts_with: []
+
+purpose:
+  summary: Product catalog management for inventory and sales
+  problem: |
+    Businesses need to organize and present their products to customers
+    in a way that's searchable, categorized, and easy to manage.
+  scope:
+    includes:
+      - Product entity definition
+      - Category hierarchy
+      - Product attributes
+      - Search capabilities
+    excludes:
+      - Inventory management (separate domain)
+      - Order processing (separate domain)
+      - Pricing rules (handled by pricing service)
+
+context:
+  bounded_context: Product Catalog
+  actors:
+    - name: Customer
+      role: Browses and searches products
+    - name: Admin
+      role: Manages products and categories
+  capabilities:
+    - View products by category
+    - Search products by name, SKU, tags
+    - Filter by price, availability
+  constraints:
+    - Products must belong to at least one category
+    - SKU must be unique across catalog
+
+contracts:
+  invariants:
+    - "Product SKU is unique"
+    - "Product must have at least one category"
+    - "Price is always positive"
+  
+  validations:
+    - "SKU format is valid (alphanumeric, 8-16 chars)"
+    - "Price is greater than 0"
+    - "Category exists before product assignment"
+
+  entities:
+    - name: Product
+      attributes:
+        - id: UUID (required, immutable)
+        - sku: String (required, unique, 8-16 chars)
+        - name: String (required, max 255 chars)
+        - description: Text (optional, max 2000 chars)
+        - price: Decimal (required, > 0)
+        - category_id: UUID (required, foreign key)
+        - status: Enum[active, inactive, discontinued]
+        - created_at: Timestamp
+        - updated_at: Timestamp
+      behaviors:
+        - create(name, sku, price, category_id)
+        - update(data)
+        - deactivate()
+        - assignCategory(category_id)
+    
+    - name: Category
+      attributes:
+        - id: UUID (required)
+        - name: String (required, unique)
+        - parent_id: UUID (optional, for hierarchy)
+        - created_at: Timestamp
+      behaviors:
+        - create(name, parent_id?)
+        - addChild(category_id)
+        - getProducts()
+
+  commands:
+    - CreateProduct
+    - UpdateProduct
+    - DeleteProduct
+    - CreateCategory
+    - AssignProductToCategory
+
+  queries:
+    - GetProductById(id)
+    - GetProductsByCategory(category_id)
+    - SearchProducts(query, filters)
+    - GetCategoryTree()
+
+  events:
+    - ProductCreated
+    - ProductUpdated
+    - ProductDeactivated
+    - CategoryCreated
+    - ProductAssignedToCategory
+
+implementation:
+  targets:
+    - PostgreSQL tables
+    - REST API endpoints
+  affected_paths:
+    - src/domains/catalog/
+    - src/routes/product-routes.ts
+    - src/routes/category-routes.ts
+  generation_mode: manual
+  migration_strategy: safe
+
+validation:
+  required_checks:
+    - Product CRUD tests
+    - Category CRUD tests
+    - Search functionality tests
+    - Integration tests with API
+  acceptance_criteria:
+    - All products have unique SKU
+    - Category tree supports 3 levels
+    - Search returns results in < 500ms
+  traceability_requirements:
+    - Links to API specification
+    - Links to database schema
+
+history:
+  change_reason: Initial catalog domain
+  previous_version: null
+  change_type: created
+  approved_by: [catalog-team]
