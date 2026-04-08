@@ -45,6 +45,10 @@ jobs:
       with:
         node-version: '20.x'
     
+    - name: Install dependencies
+      working-directory: ${{ github.workspace }}/tooling
+      run: npm install
+    
     - name: Install CLI globally
       working-directory: ${{ github.workspace }}/tooling
       run: npm install -g .
