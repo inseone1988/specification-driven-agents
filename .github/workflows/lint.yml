@@ -1,0 +1,80 @@
+name: Lint and Validate
+
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - '**.ts'
+      - '**.yaml'
+      - '**.md'
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  lint:
+    name: ESLint
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+    
+    - name: Install dependencies
+      working-directory: ./tooling
+      run: npm ci
+    
+    - name: Run ESLint
+      working-directory: ./tooling
+      run: npm run lint
+
+  validate-yaml:
+    name: YAML Validation
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+    
+    - name: Install CLI globally
+      working-directory: ./tooling
+      run: npm install -g .
+    
+    - name: Find all YAML specs
+      id: find_specs
+      run: |
+        SPECS=$(find . -name "*.yaml" -o -name "*.yml" | grep -E "(specs|examples)" | head -20)
+        echo "specs=$SPECS" >> $GITHUB_OUTPUT
+    
+    - name: Validate specs
+      run: |
+        for spec in ${{ steps.find_specs.outputs.specs }}; do
+          echo "Validating: $spec"
+          sda validate "$spec" || exit 1
+        done
+
+  markdown-lint:
+    name: Markdown Lint
+    runs-on: ubuntu-latest
+    if: false  # Disable for now until markdownlint is configured
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Run markdownlint
+      uses: DavidAnson/markdownlint-cli2@v0.13.0
+      with:
+        files: |
+          *.md
+          docs/**/*.md
+          examples/**/*.md

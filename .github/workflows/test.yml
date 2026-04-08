@@ -1,0 +1,92 @@
+name: Tests
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    name: Test Suite
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x, 22.x]
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+    
+    - name: Install dependencies
+      working-directory: ./tooling
+      run: npm ci
+    
+    - name: Run linter
+      working-directory: ./tooling
+      run: npm run lint
+    
+    - name: Run tests
+      working-directory: ./tooling
+      run: npm test
+    
+    - name: Build
+      working-directory: ./tooling
+      run: npm run build
+
+  validate-specs:
+    name: Validate Example Specs
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+    
+    - name: Install CLI globally
+      working-directory: ./tooling
+      run: npm install -g .
+    
+    - name: Validate API project example
+      run: |
+        cd examples/api-project
+        sda init
+        sda validate-project --fix
+        sda refs --validate
+    
+    - name: Validate domain specs
+      run: |
+        sda refs --path ./tooling/specs --validate
+
+  code-style:
+    name: Code Style Check
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+    
+    - name: Install dependencies
+      working-directory: ./tooling
+      run: npm ci
+    
+    - name: Check formatting
+      working-directory: ./tooling
+      run: npm run format -- --check

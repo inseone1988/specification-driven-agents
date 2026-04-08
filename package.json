@@ -1,19 +1,48 @@
 {
   "name": "specification-driven-agents",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "directories": {
-    "example": "examples"
+  "version": "0.1.0",
+  "description": "A contract-first standard for building software where specifications are human-legible, AI-executable, and team-analyzable",
+  "private": true,
+  "homepage": "https://github.com/inseone1988/specification-driven-agents#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/inseone1988/specification-driven-agents"
   },
+  "bugs": {
+    "url": "https://github.com/inseone1988/specification-driven-agents/issues"
+  },
+  "keywords": [
+    "specification",
+    "contract",
+    "cli",
+    "validation",
+    "generation",
+    "framework",
+    "ai",
+    "agent",
+    "documentation",
+    "yaml",
+    "schema"
+  ],
+  "author": "Specification-Driven Agents Team",
+  "license": "MIT",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "install:cli": "cd tooling && npm install && npm run build",
+    "test": "cd tooling && npm test",
+    "test:watch": "cd tooling && npm run test:watch",
+    "lint": "cd tooling && npm run lint",
+    "format": "cd tooling && npm run format",
+    "build": "cd tooling && npm run build",
+    "demo": "bash examples/demo.sh",
+    "demo:win": "powershell -File examples/demo.ps1",
+    "validate:project": "cd tooling && node dist/index.js validate-project --fix --write",
+    "refs": "cd tooling && node dist/index.js refs --validate",
+    "graph": "cd tooling && node dist/index.js graph --all -o mermaid"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
   "devDependencies": {
-    "tsup": "^8.5.1"
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
