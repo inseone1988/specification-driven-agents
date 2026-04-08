@@ -154,7 +154,6 @@ createGraphCommand.prototype.outputGraph = async function(output: string, filePa
 
 createGraphCommand.prototype.formatAsMermaid = function(result: any): string {
   const nodes = new Set<string>()
-  const edges: string[] = []
   
   // Add all specs to nodes
   result.hierarchy.forEach((specId: string) => nodes.add(specId))

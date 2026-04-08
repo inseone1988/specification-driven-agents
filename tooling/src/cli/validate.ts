@@ -2,7 +2,6 @@ import { Command } from 'commander'
 import { SchemaValidator } from '../validators/schema-validator'
 import { Logger } from '../utils/logger'
 import fs from 'fs/promises'
-import path from 'path'
 
 export function createValidateCommand(): Command {
   const command = new Command('validate')

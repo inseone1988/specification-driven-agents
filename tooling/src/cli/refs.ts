@@ -1,6 +1,6 @@
 import { Command } from 'commander'
 import { Logger } from '../utils/logger'
-import { ReferenceParser, ReferenceValidator, SpecReference } from '../utils/reference-parser'
+import { ReferenceParser, SpecReference } from '../utils/reference-parser'
 import { glob } from 'glob'
 import yaml from 'js-yaml'
 import fs from 'fs/promises'
@@ -55,8 +55,6 @@ export function createRefsCommand(): Command {
         
         const allRefs: Map<string, { ref: SpecReference; spec: string }[]> = new Map()
         const stats: RefStats = { total: 0, local: 0, versioned: 0, external: 0, remote: 0, crossProject: 0 }
-        
-        const validator = new ReferenceValidator(path.join(projectPath, 'specs'))
         
         for (const file of specFiles) {
           const relativePath = path.relative(projectPath, file)

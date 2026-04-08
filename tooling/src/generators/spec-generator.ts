@@ -1,7 +1,7 @@
 import yaml from 'js-yaml'
 import { TemplateLoader } from './template-loader'
 import { Logger } from '../utils/logger'
-import { SpecType, SpecContract } from '../types'
+import { SpecType } from '../types'
 
 export interface GenerationOptions {
   type: SpecType

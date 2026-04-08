@@ -150,7 +150,7 @@ export class ReferenceParser {
   /**
    * Resolve a reference to its full form
    */
-  static resolve(ref: SpecReference, baseProject?: string): string {
+  static resolve(ref: SpecReference, _baseProject?: string): string {
     switch (ref.type) {
       case 'local':
         return `@local:${ref.specId}`

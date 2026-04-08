@@ -87,7 +87,6 @@ export class AuthorityResolver {
     }
     
     const specId = spec.meta.id
-    const specType = spec.meta.type
     
     // Check for circular dependencies
     if (pathStack.includes(specId)) {
@@ -262,7 +261,6 @@ export class AuthorityResolver {
   
   private formatAsGraph(result: ResolutionResult): string {
     const nodes = new Set<string>()
-    const edges: string[] = []
     
     // Add all specs to nodes
     result.hierarchy.forEach(specId => nodes.add(specId))

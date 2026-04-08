@@ -334,7 +334,7 @@ export class SchemaValidator {
     spec: Record<string, any>,
     filePath: string,
     errors: ValidationError[],
-    warnings: ValidationWarning[]
+    _warnings: ValidationWarning[]
   ): void {
     if (!spec.context) {
       errors.push({
@@ -365,7 +365,7 @@ export class SchemaValidator {
     spec: Record<string, any>,
     filePath: string,
     errors: ValidationError[],
-    warnings: ValidationWarning[]
+    _warnings: ValidationWarning[]
   ): void {
     if (!spec.contracts) {
       errors.push({
@@ -449,7 +449,7 @@ export class SchemaValidator {
     spec: Record<string, any>,
     filePath: string,
     errors: ValidationError[],
-    warnings: ValidationWarning[]
+    _warnings: ValidationWarning[]
   ): void {
     if (!spec.validation) {
       errors.push({
@@ -748,7 +748,7 @@ export class SchemaValidator {
         })
         break
 
-      case 'must_be_one_of_supported_spec_types':
+      case 'must_be_one_of_supported_spec_types': {
         const validTypes = ['genesis', 'standard', 'domain', 'implementation', 'api', 'migration', 'security', 'validation', 'operational', 'task-change']
         if (!validTypes.includes(value)) {
           errors.push({
@@ -759,8 +759,9 @@ export class SchemaValidator {
           })
         }
         break
+      }
 
-      case 'semantic_version_recommended':
+      case 'semantic_version_recommended': {
         const semverRegex = /^\d+\.\d+\.\d+(-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$/
         if (!semverRegex.test(value)) {
           warnings.push({
@@ -771,6 +772,7 @@ export class SchemaValidator {
           })
         }
         break
+      }
 
       case 'must_reflect_place_in_authority_hierarchy':
         if (specType) {
@@ -799,7 +801,7 @@ export class SchemaValidator {
         }
         break
 
-      case 'should_default_to_safe_when_state_is_involved':
+      case 'should_default_to_safe_when_state_is_involved': {
         const validStrategies = ['safe', 'breaking', 'deprecation']
         if (!validStrategies.includes(value)) {
           warnings.push({
@@ -810,6 +812,7 @@ export class SchemaValidator {
           })
         }
         break
+      }
 
       case 'must_be_testable':
         if (typeof value === 'string' && value.trim().length === 0) {
@@ -878,9 +881,9 @@ export class SchemaValidator {
    * Automatically fix common specification issues
    * Returns the fixed content and a report of changes made
    */
-  async fixSpec(content: string, filePath: string): Promise<{ fixed: string, changes: string[] }> {
+  async fixSpec(content: string, _filePath: string): Promise<{ fixed: string, changes: string[] }> {
     const changes: string[] = []
-    let spec = yaml.load(content) as Record<string, any>
+    const spec = yaml.load(content) as Record<string, any>
     
     if (!spec || typeof spec !== 'object') {
       throw new Error('Invalid YAML - cannot fix')
