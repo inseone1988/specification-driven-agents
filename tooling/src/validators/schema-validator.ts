@@ -850,4 +850,188 @@ export class SchemaValidator {
     
     return output.join('\n')
   }
+
+  /**
+   * Automatically fix common specification issues
+   * Returns the fixed content and a report of changes made
+   */
+  async fixSpec(content: string, filePath: string): Promise<{ fixed: string, changes: string[] }> {
+    const changes: string[] = []
+    let spec = yaml.load(content) as Record<string, any>
+    
+    if (!spec || typeof spec !== 'object') {
+      throw new Error('Invalid YAML - cannot fix')
+    }
+
+    const specType = spec.meta?.type
+
+    // 1. Fix meta section
+    if (spec.meta) {
+      // Add tags if missing
+      if (spec.meta.tags === undefined) {
+        spec.meta.tags = []
+        changes.push('Added missing field: meta.tags = []')
+      }
+      
+      // Add compatibility if missing
+      if (spec.meta.compatibility === undefined) {
+        spec.meta.compatibility = {
+          supported_from: spec.meta.version || '0.1.0',
+          deprecated_after: null
+        }
+        changes.push('Added missing field: meta.compatibility')
+      }
+      
+      // Normalize created_at/updated_at dates
+      const today = new Date().toISOString().split('T')[0]
+      if (!spec.meta.created_at) {
+        spec.meta.created_at = today
+        changes.push('Added missing field: meta.created_at')
+      }
+      if (!spec.meta.updated_at) {
+        spec.meta.updated_at = today
+        changes.push('Added missing field: meta.updated_at')
+      }
+      
+      // Add contract_version if missing
+      if (!spec.meta.contract_version) {
+        spec.meta.contract_version = '0.1.0'
+        changes.push('Added missing field: meta.contract_version')
+      }
+    }
+
+    // 2. Fix purpose section
+    if (spec.purpose) {
+      if (spec.purpose.non_goals === undefined) {
+        spec.purpose.non_goals = []
+        changes.push('Added missing field: purpose.non_goals = []')
+      }
+    }
+
+    // 3. Fix context section
+    if (spec.context) {
+      if (spec.context.capabilities === undefined) {
+        spec.context.capabilities = []
+        changes.push('Added missing field: context.capabilities = []')
+      }
+      if (spec.context.constraints === undefined) {
+        spec.context.constraints = []
+        changes.push('Added missing field: context.constraints = []')
+      }
+    }
+
+    // 4. Fix contracts section
+    if (spec.contracts) {
+      // Add invariants and validations if missing
+      if (spec.contracts.invariants === undefined) {
+        spec.contracts.invariants = []
+        changes.push('Added missing field: contracts.invariants = []')
+      }
+      if (spec.contracts.validations === undefined) {
+        spec.contracts.validations = []
+        changes.push('Added missing field: contracts.validations = []')
+      }
+      
+      // Fix null arrays based on spec type
+      if (specType === 'domain') {
+        if (spec.contracts.entities === null) {
+          spec.contracts.entities = []
+          changes.push('Fixed null field: contracts.entities = []')
+        }
+        if (spec.contracts.commands === null) {
+          spec.contracts.commands = []
+          changes.push('Fixed null field: contracts.commands = []')
+        }
+        if (spec.contracts.queries === null) {
+          spec.contracts.queries = []
+          changes.push('Fixed null field: contracts.queries = []')
+        }
+        if (spec.contracts.events === null) {
+          spec.contracts.events = []
+          changes.push('Fixed null field: contracts.events = []')
+        }
+      } else if (specType === 'api') {
+        if (spec.contracts.endpoints === null) {
+          spec.contracts.endpoints = []
+          changes.push('Fixed null field: contracts.endpoints = []')
+        }
+      } else if (specType === 'migration') {
+        if (spec.contracts.migration_steps === null) {
+          spec.contracts.migration_steps = []
+          changes.push('Fixed null field: contracts.migration_steps = []')
+        }
+      } else if (specType === 'security') {
+        if (spec.contracts.trust_boundaries === null) {
+          spec.contracts.trust_boundaries = []
+          changes.push('Fixed null field: contracts.trust_boundaries = []')
+        }
+        if (spec.contracts.control_requirements === null) {
+          spec.contracts.control_requirements = []
+          changes.push('Fixed null field: contracts.control_requirements = []')
+        }
+      }
+    }
+
+    // 5. Fix implementation section
+    if (spec.implementation) {
+      if (spec.implementation.targets === undefined) {
+        spec.implementation.targets = []
+        changes.push('Added missing field: implementation.targets = []')
+      }
+      if (spec.implementation.affected_paths === undefined) {
+        spec.implementation.affected_paths = []
+        changes.push('Added missing field: implementation.affected_paths = []')
+      }
+      if (!spec.implementation.generation_mode) {
+        spec.implementation.generation_mode = 'manual'
+        changes.push('Added missing field: implementation.generation_mode = "manual"')
+      }
+      if (!spec.implementation.migration_strategy) {
+        spec.implementation.migration_strategy = 'safe'
+        changes.push('Added missing field: implementation.migration_strategy = "safe"')
+      }
+    }
+
+    // 6. Fix validation section
+    if (spec.validation) {
+      if (spec.validation.required_checks === undefined) {
+        spec.validation.required_checks = []
+        changes.push('Added missing field: validation.required_checks = []')
+      }
+      if (spec.validation.acceptance_criteria === undefined) {
+        spec.validation.acceptance_criteria = []
+        changes.push('Added missing field: validation.acceptance_criteria = []')
+      }
+      if (spec.validation.traceability_requirements === undefined) {
+        spec.validation.traceability_requirements = []
+        changes.push('Added missing field: validation.traceability_requirements = []')
+      }
+    }
+
+    // 7. Fix history section
+    if (spec.history) {
+      if (!spec.history.change_reason) {
+        spec.history.change_reason = 'Initial version'
+        changes.push('Added missing field: history.change_reason')
+      }
+      if (!spec.history.change_type) {
+        spec.history.change_type = 'created'
+        changes.push('Added missing field: history.change_type = "created"')
+      }
+      if (!spec.history.approved_by) {
+        spec.history.approved_by = []
+        changes.push('Added missing field: history.approved_by = []')
+      }
+    }
+
+    // Dump the fixed spec back to YAML
+    const fixed = yaml.dump(spec, {
+      indent: 2,
+      lineWidth: 120,
+      noRefs: true,
+      sortKeys: false
+    })
+
+    return { fixed, changes }
+  }
 }

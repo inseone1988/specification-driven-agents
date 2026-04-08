@@ -23,15 +23,24 @@ meta:
 authority:
   level: domain
   inherits_from:
-    - genesis  # All domains inherit from the genesis specification
-    # Add other domains or standards this domain inherits from
-    # - standard-security
-    # - domain-identity
-  depends_on: []  # Other specs this domain depends on
+    # Reference types:
+    #   @genesis                    → Local spec (most common)
+    #   @genesis@v1.0              → Versioned reference
+    #   @external:./shared/rules.yaml  → External file reference
+    #   @remote:org/repo/spec.yaml → Remote repository reference
+    #   @shared:standard-logging   → Cross-project reference
+    - genesis
+  depends_on: []
+    # Examples:
     # - domain-payments
-    # - standard-audit-logging
+    # - @external:../shared/standard-logging.yaml
+    # - @shared:common-types@1.0
   supersedes: []  # Previous domain specs this replaces
+    # Example:
+    # - domain-legacy-auth
   conflicts_with: []  # Other specs that conflict with this domain
+    # Example:
+    # - standard-old-authentication
 
 purpose:
   summary: {{summary}}

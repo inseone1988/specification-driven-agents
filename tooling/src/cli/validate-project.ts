@@ -2,19 +2,29 @@ import { Command } from 'commander'
 import { SchemaValidator } from '../validators/schema-validator'
 import { Logger } from '../utils/logger'
 import fs from 'fs/promises'
+import fsSync from 'fs'
 import path from 'path'
 import { glob } from 'glob'
 
 export function createValidateProjectCommand(): Command {
   const command = new Command('validate-project')
     .description('Validate all specifications in project')
-    .option('-p, --path <path>', 'Project path', '.')
-    .option('-r, --recursive', 'Recursive validation')
+    .option('-p, --path <path>', 'Project path (defaults to specs/ subdirectory)', '.')
+    .option('-r, --recursive', 'Recursive validation (search in subdirectories)', true) // Default to recursive
     .option('-s, --strict', 'Enable strict validation (treat warnings as errors)')
     .option('-j, --json', 'Output as JSON')
+    .option('-f, --fix', 'Automatically fix common issues (adds missing fields)')
+    .option('-w, --write', 'Write fixed files to disk (requires --fix)')
     .action(async (options) => {
       try {
-        const projectPath = path.resolve(options.path)
+        let projectPath = path.resolve(options.path)
+        
+        // If path is current directory and specs/ exists, use specs/ as default
+        if (options.path === '.' && fsSync.existsSync(path.join(projectPath, 'specs'))) {
+          projectPath = path.join(projectPath, 'specs')
+          Logger.info('Using specs/ subdirectory as default')
+        }
+        
         Logger.section(`Validating project: ${projectPath}`)
         
         // Find specification files
@@ -35,6 +45,7 @@ export function createValidateProjectCommand(): Command {
         let totalValid = 0
         let totalErrors = 0
         let totalWarnings = 0
+        let totalFixed = 0
         
         for (const filePath of specFiles) {
           try {
@@ -42,7 +53,29 @@ export function createValidateProjectCommand(): Command {
             Logger.debug(`Validating: ${relativePath}`)
             
             const content = await fs.readFile(filePath, 'utf-8')
-            const result = validator.validateSpec(content, relativePath)
+            let result = validator.validateSpec(content, relativePath)
+            
+            // Apply fix if requested
+            if (options.fix && !result.valid) {
+              Logger.info(`Fixing: ${relativePath}`)
+              const fixResult = await validator.fixSpec(content, relativePath)
+              
+              if (fixResult.changes.length > 0) {
+                console.log(`   Changes made to ${relativePath}:`)
+                fixResult.changes.forEach(change => {
+                  console.log(`     + ${change}`)
+                })
+                
+                if (options.write) {
+                  await fs.writeFile(filePath, fixResult.fixed, 'utf-8')
+                  console.log(`     ✓ Written to disk: ${relativePath}`)
+                  totalFixed++
+                }
+                
+                // Re-validate after fix
+                result = validator.validateSpec(fixResult.fixed, relativePath)
+              }
+            }
             
             // Apply strict mode if enabled
             if (options.strict && result.warnings.length > 0) {
@@ -91,6 +124,7 @@ export function createValidateProjectCommand(): Command {
             invalid: results.length - totalValid,
             errors: totalErrors,
             warnings: totalWarnings,
+            fixed: totalFixed,
             results: results.map(r => ({
               file: r.file,
               valid: r.valid,
@@ -109,6 +143,9 @@ export function createValidateProjectCommand(): Command {
           console.log(`❌ Invalid: ${results.length - totalValid}`)
           console.log(`⚠️  Errors: ${totalErrors}`)
           console.log(`🔶 Warnings: ${totalWarnings}`)
+          if (options.fix && totalFixed > 0) {
+            console.log(`🔧 Fixed: ${totalFixed}`)
+          }
           console.log('='.repeat(60))
           
           // Show detailed results for invalid files

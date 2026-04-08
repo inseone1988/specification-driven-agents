@@ -10,6 +10,8 @@ export function createValidateCommand(): Command {
     .argument('<path>', 'Path to the specification file')
     .option('-s, --strict', 'Enable strict validation (treat warnings as errors)')
     .option('-j, --json', 'Output as JSON')
+    .option('-f, --fix', 'Automatically fix common issues (show changes without writing)')
+    .option('-w, --write', 'Write fixed file to disk (requires --fix)')
     .action(async (filePath: string, options) => {
       try {
         Logger.section(`Validating specification: ${filePath}`)
@@ -20,7 +22,31 @@ export function createValidateCommand(): Command {
         // Validate
         const validator = new SchemaValidator()
         await validator.loadSchema()
-        const result = validator.validateSpec(content, filePath)
+        let result = validator.validateSpec(content, filePath)
+        
+        // Apply fix if requested
+        if (options.fix && !result.valid) {
+          console.log('Applying automatic fixes...')
+          const fixResult = await validator.fixSpec(content, filePath)
+          
+          if (fixResult.changes.length > 0) {
+            console.log('Changes made:')
+            fixResult.changes.forEach(change => {
+              console.log(`  + ${change}`)
+            })
+            
+            if (options.write) {
+              await fs.writeFile(filePath, fixResult.fixed, 'utf-8')
+              console.log(`✓ Written to disk: ${filePath}`)
+              // Re-validate after fix
+              result = validator.validateSpec(fixResult.fixed, filePath)
+            } else {
+              console.log(`\nTip: Use --write to save changes to disk`)
+            }
+          } else {
+            console.log('No changes needed - file is already complete')
+          }
+        }
         
         // Apply strict mode if enabled
         if (options.strict && result.warnings.length > 0) {

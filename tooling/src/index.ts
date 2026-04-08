@@ -53,6 +53,10 @@ program.addCommand(createStatusCommand())
 import { createGraphCommand } from './cli/graph'
 program.addCommand(createGraphCommand())
 
+// Add the refs command
+import { createRefsCommand } from './cli/refs'
+program.addCommand(createRefsCommand())
+
 // Default help for unknown commands
 program.on('command:*', () => {
   console.error(chalk.red('Invalid command: %s'), program.args.join(' '))
