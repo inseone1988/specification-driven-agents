@@ -24,12 +24,9 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     
-    - name: Debug - List tooling directory
-      run: ls -la ${{ github.workspace }}/tooling/ | head -20
-    
     - name: Install dependencies
       working-directory: ${{ github.workspace }}/tooling
-      run: npm ci
+      run: npm install
     
     - name: Run linter
       working-directory: ${{ github.workspace }}/tooling
@@ -88,7 +85,7 @@ jobs:
     
     - name: Install dependencies
       working-directory: ${{ github.workspace }}/tooling
-      run: npm ci
+      run: npm install
     
     - name: Check formatting
       working-directory: ${{ github.workspace }}/tooling

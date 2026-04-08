@@ -26,7 +26,7 @@ jobs:
     
     - name: Install dependencies
       working-directory: ${{ github.workspace }}/tooling
-      run: npm ci
+      run: npm install
     
     - name: Run ESLint
       working-directory: ${{ github.workspace }}/tooling
