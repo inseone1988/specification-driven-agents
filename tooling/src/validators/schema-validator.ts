@@ -69,7 +69,30 @@ export class SchemaValidator {
   async loadSchema(): Promise<void> {
     try {
       const content = await fs.readFile(this.schemaPath, 'utf-8')
-      this.schema = yaml.load(content) as ContractSchema
+      const loaded = yaml.load(content)
+      
+      // Validate schema structure
+      if (!loaded || typeof loaded !== 'object') {
+        throw new Error('Schema file is empty or invalid')
+      }
+      
+      const schemaData = loaded as Record<string, any>
+      
+      // Validate required top-level fields
+      if (!schemaData.schema) {
+        throw new Error('Schema missing top-level "schema" field')
+      }
+      if (!schemaData.required_top_level_sections) {
+        throw new Error('Schema missing "required_top_level_sections" field')
+      }
+      if (!Array.isArray(schemaData.required_top_level_sections)) {
+        throw new Error('"required_top_level_sections" must be an array')
+      }
+      if (!schemaData.sections) {
+        throw new Error('Schema missing "sections" field')
+      }
+      
+      this.schema = loaded as ContractSchema
       Logger.debug(`Schema loaded: ${this.schema.schema.name} v${this.schema.schema.version}`)
     } catch (error) {
       Logger.warn(`Failed to load schema from ${this.schemaPath}: ${error instanceof Error ? error.message : String(error)}`)
