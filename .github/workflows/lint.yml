@@ -25,11 +25,11 @@ jobs:
         node-version: '20.x'
     
     - name: Install dependencies
-      working-directory: ./tooling
+      working-directory: ${{ github.workspace }}/tooling
       run: npm ci
     
     - name: Run ESLint
-      working-directory: ./tooling
+      working-directory: ${{ github.workspace }}/tooling
       run: npm run lint
 
   validate-yaml:
@@ -46,7 +46,7 @@ jobs:
         node-version: '20.x'
     
     - name: Install CLI globally
-      working-directory: ./tooling
+      working-directory: ${{ github.workspace }}/tooling
       run: npm install -g .
     
     - name: Find all YAML specs
