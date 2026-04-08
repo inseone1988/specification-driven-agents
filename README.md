@@ -1,6 +1,8 @@
 # Specification-Driven Agents
 
-A contract-first standard for building software with humans and AI working together.
+> **"Specifications that humans understand, AI agents execute"**
+
+A contract-first standard for building software where specifications are human-legible, AI-executable, and team-analyzable.
 
 ## Why this exists
 
@@ -15,7 +17,7 @@ Specification-Driven Agents proposes a stricter model:
 - traceable relationships between specs
 - validation before change
 
-The goal is simple: make human+AI engineering auditable, reproducible, and structurally sound.
+The goal is simple: make human-AI-agent engineering legible, traceable, and analytically rigorous.
 
 ## Core idea
 
@@ -40,7 +42,7 @@ Every specification should clearly define:
 - `VERSIONING.md` — semantic versioning policy for the standard and specs
 - `AUDIT_POLICY.md` — traceability and audit rules
 - `schemas/specification-contract.schema.yaml` — canonical contract structure
-- `schemas/spec-audit.schema.json` — machine-readable audit metadata validation
+- `schemas/spec-audit.schema.json` — machine-parseable audit metadata validation
 - `specs/spec-template.yaml` — human authoring template
 - `examples/domain-spec.example.yaml` — worked example
 - `examples/standard-spec.example.yaml` — worked standard example
@@ -54,12 +56,13 @@ It is intentionally small, opinionated, and designed to evolve.
 
 ## Principles
 
-- documentation is architecture, not decoration
+- specifications are architecture, not decoration
 - agents must resolve authority, not guess intent
 - lower-level specs may refine but must not contradict higher-level contracts
 - every meaningful change should be traceable from intention to implementation
 - no silent contract mutation
 - agent behavior should be directed by contract when automation is involved
+- every spec should answer: **What?** **Why?** **Who governs?** **What depends on it?** **How do we validate it?**
 
 ## Long-term direction
 
@@ -67,7 +70,7 @@ This project aims to define a practical standard for:
 - spec topology
 - authority/inheritance rules
 - validation rules
-- machine-readable spec graphs
+- human-interpretable and machine-queryable spec graphs
 - agent read-resolution rules
 - contract-driven implementation workflows
 

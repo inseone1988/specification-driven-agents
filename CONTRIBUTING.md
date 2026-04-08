@@ -4,11 +4,11 @@ Thank you for your interest in contributing to the Specification-Driven Agents f
 
 ## 🎯 Project Vision
 
-Specification-Driven Agents is a framework that enables AI systems to understand and execute architectural intent through structured contracts. Our goal is to make software design resolvable, auditable, and machine-usable.
+Specification-Driven Agents is a framework that enables humans, AI systems, and agents to understand architectural intent, execute contracts reliably, and analyze decisions through structured specifications. Our goal is to make software design legible, traceable, and human-AI-agent-executable.
 
 ## 📋 Code of Conduct
 
-Please read and follow our [Code of Conduct](CODE_OF_CONDUCT.md) to ensure a welcoming environment for everyone.
+Please read and follow our Code of Conduct to ensure a welcoming environment for everyone. (See [ Contributor Covenant](https://www.contributor-covenant.org/))
 
 ## 🚀 Getting Started
 
@@ -267,4 +267,4 @@ By contributing, you agree that your contributions will be licensed under the pr
 
 ## 🙏 Thank You!
 
-Thank you for contributing to making software development more structured, auditable, and machine-usable!
+Thank you for contributing to making software development more structured, legible, and human-AI-agent-executable!

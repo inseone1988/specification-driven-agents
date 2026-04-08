@@ -72,13 +72,17 @@ Validate a specification against the contract schema.
 **Options:**
 - `-s, --strict`: Enable strict validation
 - `-j, --json`: Output as JSON
+- `-f, --fix`: Automatically fix common issues (preview changes)
+- `-w, --write`: Write fixed specs to disk (requires --fix)
 
 ### `sda validate-project`
 Validate all specifications in the project.
 
 **Options:**
 - `-p, --path <path>`: Project path (default: ".")
-- `-r, --recursive`: Recursive validation
+- `-r, --recursive`: Recursive validation (default: true)
+- `-f, --fix`: Automatically fix common issues
+- `-w, --write`: Write fixed specs to disk
 
 ### `sda resolve <spec-id>`
 Resolve authority hierarchy and dependencies.
@@ -101,6 +105,18 @@ Generate dependency graph of specifications.
 **Options:**
 - `-o, --output <format>`: Output format (`dot`, `json`, `mermaid`) (default: "dot")
 - `-f, --file <path>`: Output file path
+- `-a, --all`: Generate graph for all specifications
+- `-s, --spec <spec-id>`: Generate graph for specific specification
+
+### `sda refs`
+List and validate cross-specification references.
+
+**Options:**
+- `-p, --path <path>`: Project path (default: ".")
+- `-r, --recursive`: Search recursively (default: true)
+- `-v, --validate`: Validate references (check if targets exist)
+- `-j, --json`: Output as JSON
+- `-s, --spec <spec-id>`: Show refs for specific spec only
 
 ## Specification Types and Formats
 
@@ -159,6 +175,71 @@ The framework supports 10 types of specifications with strict format rules:
 
 **Format Rule:** Only `genesis` uses `.md`, all other types use `.yaml`
 
+## 🔗 Typed References System
+
+Specifications reference each other using typed references in the `authority` section:
+
+### Reference Types
+
+| Syntax | Type | Example |
+|--------|------|---------|
+| `@spec-id` | Local | `@genesis`, `@domain-auth` |
+| `@spec-id@v1.0` | Versioned | `@standard-api@v1.2` |
+| `@external:./path` | External File | `@external:./shared/rules.yaml` |
+| `@remote:owner/repo` | Remote Repository | `@remote:org/shared-specs` |
+| `@project:spec-id` | Cross-Project | `@tbs:domain-account` |
+
+### Usage Examples
+
+```yaml
+authority:
+  inherits_from:
+    - genesis
+    - @external:./standards/security.yaml
+    - @standard-authentication@v2.0
+  depends_on:
+    - domain-payments
+    - @remote:team/api-specs
+```
+
+### Commands
+
+```bash
+# List all references in project
+sda refs
+
+# Validate that all references exist
+sda refs --validate
+
+# Show refs for specific spec
+sda refs --spec api-orders
+```
+
+## 🔧 Auto-fix Validation
+
+The CLI can automatically fix common specification issues:
+
+```bash
+# Preview fixes without writing
+sda validate-project --fix
+
+# Apply fixes and save
+sda validate-project --fix --write
+
+# Fix single file
+sda validate specs/domain.yaml --fix --write
+```
+
+### Auto-fixable Fields
+
+The `--fix` option automatically adds missing required fields:
+- `meta.tags`, `meta.compatibility`, dates
+- `contracts.invariants`, `contracts.validations`
+- `context.capabilities`, `context.constraints`
+- `implementation.targets`, `implementation.migration_strategy`
+- `validation.required_checks`, `validation.acceptance_criteria`
+- And more...
+
 ## Project Structure
 
 A typical Specification-Driven Agents project:
@@ -202,11 +283,18 @@ generation:
 
 Specification-Driven Agents proposes a "contract-first" approach to software development where:
 
-1. **Architecture before implementation** - Define contracts before writing code
-2. **Explicit authority and inheritance** - Clear hierarchy of specifications
-3. **Traceable relationships** - Every change is tracked from intention to implementation
-4. **Validation before change** - Automated validation ensures contract compliance
-5. **Human+AI collaboration** - Structured contracts enable effective AI assistance
+1. **Human-legible** - Specifications are written for humans to understand first
+2. **AI-executable** - Agents can parse, validate, and execute contract directives
+3. **Team-analyzable** - Every decision is traceable and question-able
+4. **Explicit authority** - Clear hierarchy of what governs what
+5. **Validation before change** - Automated checks ensure contract compliance
+
+Every specification should answer:
+- **What?** - What is this spec defining?
+- **Why?** - Why does it exist?
+- **Who governs?** - What authority does it inherit from?
+- **What depends on it?** - What specs reference this?
+- **How do we validate it?** - What are the acceptance criteria?
 
 ## Development
 
