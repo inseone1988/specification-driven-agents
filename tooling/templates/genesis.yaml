@@ -1,0 +1,150 @@
+# Genesis Specification: {{title}}
+#
+# The genesis is the root narrative and architectural entry point of a project.
+# It is the highest authority in the specification graph: every other spec
+# inherits from it, and nothing overrides it.
+#
+# Although it is narrative in spirit, the genesis is expressed as a YAML contract
+# (like every other spec) so humans and agents read a single, consistent format.
+# Keep the prose in the multiline string fields below.
+
+meta:
+  id: {{id}}
+  title: {{title}}
+  type: genesis
+  version: 0.1.0
+  contract_version: 0.1.0
+  compatibility:
+    supported_from: 0.1.0
+    deprecated_after: null  # Set a date when this genesis should be deprecated
+  status: draft  # draft | review | approved | implemented | deprecated | archived
+  owner: {{owner}}
+  created_at: {{date}}
+  updated_at: {{date}}
+  tags: []  # e.g., ["vision", "foundation", "core"]
+
+authority:
+  level: genesis
+  # Genesis is the root of the authority graph — it inherits from nothing.
+  inherits_from: []
+  depends_on: []
+  supersedes: []  # Previous genesis specs this replaces
+  conflicts_with: []
+
+purpose:
+  summary: {{summary}}
+  problem: |
+    [The core problem this project solves.]
+
+    Example:
+    "AI-assisted development lacks architectural governance, leading to
+    inconsistent implementations and documentation drift."
+  vision: |
+    [A memorable description of what this project is and the future it enables.]
+
+    Example:
+    "A framework where architectural decisions are captured as machine-readable
+    contracts that guide both humans and AI agents toward consistent, governed
+    implementations."
+  design_philosophy:
+    - Architecture-First — design governs implementation, not the reverse
+    - Contract-Driven — specifications are executable intent, not decoration
+    - Authority-Explicit — every decision has traceable authority
+    - Dependency-Aware — relationships are explicit and resolvable
+    - Agent-Collaborative — AI systems resolve intent, they do not guess
+    - Validation-Integrated — contracts include their own validation rules
+    - Drift-Preventive — documentation stays synchronized with implementation
+  scope:
+    includes:
+      - Project vision and guiding principles
+      - Major domains and bounded contexts at a high level
+      - Foundational, project-wide constraints
+      - Non-negotiable rules every spec must obey
+    excludes:
+      - Implementation details (covered by implementation specs)
+      - Specific API contracts (covered by api specs)
+      - Domain internals (covered by domain specs)
+  non_goals:
+    - [List what this genesis explicitly does not attempt to define]
+    # Example:
+    # - Replacing software design with documentation
+    # - Prescribing a specific technology stack
+
+context:
+  bounded_context: project-wide
+  actors:
+    - [List the primary stakeholders this project serves]
+    # Example:
+    # - name: Software Architect
+    #   role: Authors and governs specifications
+    # - name: AI Agent
+    #   role: Resolves and implements specifications
+  capabilities:
+    - [List the foundational capabilities the project must provide]
+    # Example:
+    # - A canonical contract shape for all specs
+    # - An authority model for inheritance and precedence
+    # - A validation model for consistency and completeness
+  constraints:
+    - No spec without identity — every specification has a unique ID
+    - No contradiction without resolution — lower specs cannot contradict higher authority without explicit override
+    - No contract without validation — every specification includes validation rules
+    - No hidden assumptions — all authority and dependencies are explicit
+
+contracts:
+  invariants:
+    - Genesis is the single root authority of the project
+    - Every active spec must trace its authority chain back to this genesis
+    - Examples inform but never override governing specifications
+  validations:
+    - All required top-level sections are present
+    - Authority level is 'genesis' and inherits_from is empty
+  # Genesis-level non-negotiable rules that propagate to every spec.
+  non_negotiable_rules:
+    - Identity required — every active spec declares its authority position
+    - Traceability mandatory — every implementation-driving spec declares what it affects
+    - Agents follow authority — governing specs win over local convenience
+    - Ambiguity is a defect — unclear requirements are bugs, not features
+
+implementation:
+  targets:
+    - specs/  # The genesis governs the entire specification tree
+  affected_paths:
+    - specs/**/*  # Every spec in the project derives authority from here
+  generation_mode: manual  # genesis is authored by humans, not generated from code
+  migration_strategy: safe
+  notes:
+    - The genesis does not drive code directly; it governs the specs that do.
+
+validation:
+  required_checks:
+    - genesis_self_consistency  # Vision, principles and constraints do not contradict
+    - root_authority  # authority.level is genesis with empty inherits_from
+  acceptance_criteria:
+    - Vision, problem and philosophy are articulated clearly
+    - Project-wide constraints and non-negotiable rules are explicit
+    - Every required derived artifact (standards, domains, etc.) is identified
+  traceability_requirements:
+    - downstream_specs_reference_genesis  # standards/domains inherit_from this spec
+
+agent_directives:
+  required_read_order:
+    - this_genesis  # Always read the genesis first to understand the vision
+  must:
+    - Treat genesis principles and constraints as the highest authority
+    - Resolve conflicts in favor of the genesis unless an explicit override exists
+  must_not:
+    - Contradict genesis constraints or non-negotiable rules
+    - Introduce architecture that bypasses the authority graph
+  completion_requirements:
+    - Vision, constraints and required derived artifacts are fully defined
+
+history:
+  change_reason: initial genesis specification
+  previous_version: null
+  change_type: additive  # additive | breaking | deprecation | correction | refactor
+  approved_by:
+    - {{owner}}
+  review_ref: null
+  notes:
+    - Initial project foundation

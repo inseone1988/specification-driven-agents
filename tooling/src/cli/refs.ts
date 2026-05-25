@@ -29,11 +29,11 @@ export function createRefsCommand(): Command {
         Logger.section(`Analyzing references in: ${projectPath}`)
         
         // Find all spec files
-        const patterns = options.recursive 
-          ? ['**/*.yaml', '**/*.yml', '**/*.md']
-          : ['*.yaml', '*.yml', '*.md']
-        
-        const files: string[] = []
+        const patterns = options.recursive
+          ? ['**/*.yaml', '**/*.yml']
+          : ['*.yaml', '*.yml']
+
+        const specFiles: string[] = []
         for (const pattern of patterns) {
           const matches = await glob(pattern, {
             cwd: projectPath,
@@ -41,16 +41,9 @@ export function createRefsCommand(): Command {
             windowsPathsNoEscape: true,
             ignore: ['**/node_modules/**', '**/.git/**']
           })
-          files.push(...matches)
+          specFiles.push(...matches)
         }
-        
-        // Filter out non-spec files
-        const specFiles = files.filter(file => {
-          const basename = path.basename(file).toLowerCase()
-          if (basename === 'readme.md' || basename === 'changelog.md') return false
-          return true
-        })
-        
+
         Logger.info(`Found ${specFiles.length} specification files`)
         
         const allRefs: Map<string, { ref: SpecReference; spec: string }[]> = new Map()
@@ -62,12 +55,7 @@ export function createRefsCommand(): Command {
           try {
             const content = await fs.readFile(file, 'utf-8')
             let spec: Record<string, any>
-            
-            // Skip MD files that aren't specs
-            if (file.endsWith('.md') && !file.includes('specs/')) {
-              continue
-            }
-            
+
             try {
               spec = yaml.load(content) as Record<string, any>
             } catch {
@@ -227,7 +215,6 @@ function getTypeIcon(type: SpecReference['type']): string {
 async function checkLocalSpecExists(specsDir: string, specId: string): Promise<boolean> {
   const locations = [
     path.join(specsDir, `${specId}.yaml`),
-    path.join(specsDir, `${specId}.md`),
     path.join(specsDir, 'genesis', `${specId}.yaml`),
     path.join(specsDir, 'standards', `${specId}.yaml`),
     path.join(specsDir, 'domains', `${specId}.yaml`),

@@ -25,12 +25,12 @@ export function createGenerateCommand(): Command {
           process.exit(1)
         }
 
-        // For genesis type, name is always "genesis" and file is always genesis.md
+        // For genesis type, name is always "genesis" and file is always genesis.yaml
         const specName = type === 'genesis' ? 'genesis' : (name || type)
-        
+
         // For genesis, also set default output path
-        const outputPath = type === 'genesis' && !options.output 
-          ? 'genesis.md' 
+        const outputPath = type === 'genesis' && !options.output
+          ? 'genesis.yaml'
           : options.output
 
         // Parse values if provided

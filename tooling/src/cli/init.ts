@@ -413,7 +413,7 @@ async function copyTemplates(sourceDir: string, targetDir: string): Promise<void
       try {
         if (await fileExists(possibleDir)) {
           const files = await fs.readdir(possibleDir)
-          const templateFiles = files.filter(file => file.endsWith('.yaml') || file.endsWith('.md'))
+          const templateFiles = files.filter(file => file.endsWith('.yaml'))
           
           if (templateFiles.length > 0) {
             Logger.info(`Found templates in: ${possibleDir}`)
@@ -493,28 +493,32 @@ meta:
 
 # ... rest of standard template
 `,
-    'genesis.md': `# Genesis Specification: {{title}}
+    'genesis.yaml': `# Genesis Specification: {{title}}
 #
 # Genesis specifications define the overall vision, principles,
 # and foundational decisions for a project or system.
 
-## 🎯 Project Vision
-{{summary}}
+meta:
+  id: {{id}}
+  title: {{title}}
+  type: genesis
+  version: 0.1.0
+  contract_version: 0.1.0
+  compatibility:
+    supported_from: 0.1.0
+    deprecated_after: null
+  status: draft
+  owner: {{owner}}
+  created_at: {{date}}
+  updated_at: {{date}}
+  tags: []
 
-## 📋 Core Principles
-1. **Principle 1**: [Description]
-2. **Principle 2**: [Description]
-3. **Principle 3**: [Description]
+authority:
+  level: genesis
+  inherits_from: []
+  depends_on: []
 
-## 🏗️ Architectural Decisions
-- [Decision 1]
-- [Decision 2]
-- [Decision 3]
-
-## 📊 Success Metrics
-- [Metric 1]
-- [Metric 2]
-- [Metric 3]
+# ... rest of genesis template
 `
   }
   

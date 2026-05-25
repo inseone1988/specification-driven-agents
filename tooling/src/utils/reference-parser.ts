@@ -267,7 +267,6 @@ export class ReferenceValidator {
     // Try different locations
     const locations = [
       path.join(this.specsDir, `${specId}.yaml`),
-      path.join(this.specsDir, `${specId}.md`),
       path.join(this.specsDir, 'genesis', `${specId}.yaml`),
       path.join(this.specsDir, 'standards', `${specId}.yaml`),
       path.join(this.specsDir, 'domains', `${specId}.yaml`),

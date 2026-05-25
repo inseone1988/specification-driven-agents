@@ -179,10 +179,8 @@ export class AuthorityResolver {
     const patterns = [
       `${specId}.yaml`,
       `${specId}.yml`,
-      `${specId}.md`, // For genesis
       `**/${specId}.yaml`,
-      `**/${specId}.yml`,
-      `**/${specId}.md`
+      `**/${specId}.yml`
     ]
     
     for (const pattern of patterns) {

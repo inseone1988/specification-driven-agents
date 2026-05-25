@@ -112,16 +112,7 @@ export class SpecGenerator {
   }
 
   private validateGeneratedSpec(content: string): void {
-    // Genesis specs are Markdown, skip YAML validation
-    if (this.currentType === 'genesis') {
-      if (!content.trim()) {
-        throw new Error('Generated genesis spec is empty')
-      }
-      Logger.debug('Generated genesis spec passed basic validation')
-      return
-    }
-    
-    // For YAML specs, validate structure
+    // All spec types (including genesis) are YAML, validate structure
     try {
       const parsed = yaml.load(content)
       
@@ -149,8 +140,7 @@ export class SpecGenerator {
 
   private getDefaultOutputPath(type: SpecType, name: string): string {
     const id = this.generateId(type, name)
-    const extension = type === 'genesis' ? '.md' : '.yaml'
-    return `./specs/${id}${extension}`
+    return `./specs/${id}.yaml`
   }
 
   private async writeSpecFile(

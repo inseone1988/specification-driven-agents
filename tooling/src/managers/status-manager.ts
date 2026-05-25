@@ -168,10 +168,8 @@ export class StatusManager {
     const patterns = [
       `${specId}.yaml`,
       `${specId}.yml`,
-      `${specId}.md`,
       `**/${specId}.yaml`,
-      `**/${specId}.yml`,
-      `**/${specId}.md`
+      `**/${specId}.yml`
     ]
     
     for (const pattern of patterns) {
@@ -202,7 +200,7 @@ export class StatusManager {
   private async findAllSpecFiles(dir: string): Promise<string[]> {
     try {
       const { glob } = await import('glob')
-      const patterns = ['**/*.yaml', '**/*.yml', '**/*.md']
+      const patterns = ['**/*.yaml', '**/*.yml']
       const files: string[] = []
       
       for (const pattern of patterns) {

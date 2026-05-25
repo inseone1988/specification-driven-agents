@@ -4,8 +4,8 @@ title: My Project Genesis Specification
 type: genesis
 version: 0.1.0
 owner: lupit
-created_at: 2026-04-03
-updated_at: 2026-04-03
+created_at: 2026-04-08
+updated_at: 2026-04-08
 status: draft
 ---
 
@@ -160,7 +160,7 @@ We'll know this project is successful when:
 ---
 
 **Genesis ID:** `genesis-my-project`  
-**Created:** `2026-04-03`  
+**Created:** `2026-04-08`  
 **Owner:** `lupit`  
 **Status:** `Draft`  
 **Version:** `0.1.0`

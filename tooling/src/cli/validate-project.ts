@@ -208,12 +208,12 @@ async function findSpecificationFiles(
   recursive: boolean
 ): Promise<string[]> {
   try {
-    const patterns = recursive 
-      ? ['**/*.yaml', '**/*.yml', '**/*.md']
-      : ['*.yaml', '*.yml', '*.md']
-    
+    const patterns = recursive
+      ? ['**/*.yaml', '**/*.yml']
+      : ['*.yaml', '*.yml']
+
     const files: string[] = []
-    
+
     for (const pattern of patterns) {
       const matches = await glob(pattern, {
         cwd: projectPath,
@@ -221,30 +221,21 @@ async function findSpecificationFiles(
         windowsPathsNoEscape: true,
         ignore: ['**/node_modules/**', '**/.git/**', '**/dist/**', '**/build/**']
       })
-      
+
       files.push(...matches)
     }
-    
+
     // Filter to only include likely specification files
     return files.filter(file => {
-      const ext = path.extname(file).toLowerCase()
       const filename = path.basename(file).toLowerCase()
-      const dirname = path.basename(path.dirname(file)).toLowerCase()
-      
+
       // Skip non-spec files
-      if (filename.includes('package.json') || 
+      if (filename.includes('package.json') ||
           filename.includes('tsconfig') ||
-          filename.includes('.config.') ||
-          filename === 'readme.md' ||
-          filename === 'changelog.md') {
+          filename.includes('.config.')) {
         return false
       }
-      
-      // Only include .md files that are in spec directories
-      if (ext === '.md' && !['specs', 'specifications', 'templates'].includes(dirname)) {
-        return false
-      }
-      
+
       return true
     })
     

@@ -43,8 +43,7 @@ export class TemplateLoader {
   }
 
   async loadTemplate(templateName: string): Promise<string> {
-    const extension = templateName === 'genesis' ? '.md' : '.yaml'
-    const templatePath = path.join(this.templatesDir, `${templateName}${extension}`)
+    const templatePath = path.join(this.templatesDir, `${templateName}.yaml`)
     
     try {
       const content = await fs.readFile(templatePath, 'utf-8')
@@ -61,8 +60,8 @@ export class TemplateLoader {
     try {
       const files = await fs.readdir(this.templatesDir)
       return files
-        .filter(file => file.endsWith('.yaml') || file.endsWith('.md'))
-        .map(file => file.replace('.yaml', '').replace('.md', ''))
+        .filter(file => file.endsWith('.yaml'))
+        .map(file => file.replace('.yaml', ''))
     } catch (error) {
       Logger.error(`Failed to list templates: ${error}`)
       return []
@@ -70,8 +69,7 @@ export class TemplateLoader {
   }
 
   async templateExists(templateName: string): Promise<boolean> {
-    const extension = templateName === 'genesis' ? '.md' : '.yaml'
-    const templatePath = path.join(this.templatesDir, `${templateName}${extension}`)
+    const templatePath = path.join(this.templatesDir, `${templateName}.yaml`)
     
     try {
       await fs.access(templatePath)

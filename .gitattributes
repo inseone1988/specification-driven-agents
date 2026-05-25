@@ -1,0 +1,15 @@
+# Normalize line endings to LF in the repository for all text files.
+* text=auto eol=lf
+
+# Explicit text formats used across the project
+*.ts    text eol=lf
+*.js    text eol=lf
+*.json  text eol=lf
+*.yaml  text eol=lf
+*.yml   text eol=lf
+*.md    text eol=lf
+*.sh    text eol=lf
+
+# Windows-only scripts keep CRLF
+*.cmd   text eol=crlf
+*.bat   text eol=crlf
