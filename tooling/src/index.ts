@@ -11,6 +11,7 @@ import { createValidateCommand } from './cli/validate'
 import { createResolveCommand } from './cli/resolve'
 import { createValidateProjectCommand } from './cli/validate-project'
 import { createDiffCommand } from './cli/diff'
+import { createGitCommand } from './cli/git'
 
 const program = new Command()
 
@@ -60,6 +61,9 @@ program.addCommand(createRefsCommand())
 
 // Add the diff command
 program.addCommand(createDiffCommand())
+
+// Add the git command
+program.addCommand(createGitCommand())
 
 // Default help for unknown commands
 program.on('command:*', () => {
