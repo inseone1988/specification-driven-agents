@@ -4,7 +4,38 @@ import path from 'path'
 import { Logger } from '../utils/logger'
 import { SpecStatus } from '../types'
 
+interface ConfigTransitions {
+  [key: string]: string[]
+}
+
 export class StatusManager {
+  private configTransitions: ConfigTransitions | null = null
+  private configLoaded = false
+
+  /**
+   * Load lifecycle transitions from .sda-config.yaml
+   */
+  private async loadConfigTransitions(): Promise<ConfigTransitions | null> {
+    if (this.configLoaded) return this.configTransitions
+    
+    try {
+      const configPath = path.join(process.cwd(), '.sda-config.yaml')
+      const content = await fs.readFile(configPath, 'utf-8')
+      const config = yaml.load(content) as Record<string, any>
+      
+      if (config?.lifecycle?.allowedTransitions) {
+        this.configTransitions = config.lifecycle.allowedTransitions as ConfigTransitions
+        Logger.debug('Loaded custom transitions from .sda-config.yaml')
+      }
+    } catch {
+      // No config file or invalid — use defaults
+      Logger.debug('No .sda-config.yaml found, using default transitions')
+    }
+    
+    this.configLoaded = true
+    return this.configTransitions
+  }
+
   /**
    * Update the status of a specification
    */
@@ -30,8 +61,9 @@ export class StatusManager {
       
       const previousStatus = spec.meta.status
       
-      // Validate status transition
-      if (!this.isValidStatusTransition(previousStatus, newStatus)) {
+      // Validate status transition (uses config if available)
+      const transitions = await this.loadConfigTransitions()
+      if (!this.isValidStatusTransition(previousStatus, newStatus, transitions)) {
         throw new Error(`Invalid status transition: ${previousStatus} -> ${newStatus}`)
       }
       
@@ -221,9 +253,13 @@ export class StatusManager {
     }
   }
   
-  private isValidStatusTransition(from: string, to: SpecStatus): boolean {
-    // Allowed transitions
-    const transitions: Record<string, SpecStatus[]> = {
+  private isValidStatusTransition(
+    from: string, 
+    to: SpecStatus, 
+    configTransitions?: ConfigTransitions | null
+  ): boolean {
+    // Use config transitions if available, otherwise defaults
+    const transitions: Record<string, string[]> = configTransitions || {
       'draft': ['review', 'archived'],
       'review': ['approved', 'draft', 'archived'],
       'approved': ['implemented', 'review', 'archived'],

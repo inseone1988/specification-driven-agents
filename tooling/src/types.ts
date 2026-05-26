@@ -11,6 +11,7 @@ export type SpecType =
   | 'validation'
   | 'operational'
   | 'task-change'
+  | string // Allow custom types via plugins
 
 export type SpecStatus =
   | 'draft'
@@ -26,6 +27,7 @@ export type AuthorityLevel =
   | 'domain'
   | 'implementation'
   | 'task-change'
+  | string // Allow custom levels via plugins
 
 export type ChangeType =
   | 'additive'
@@ -165,4 +167,36 @@ export interface ResolutionResult {
   dependencies: string[]
   conflicts: string[]
   circularDependencies: string[][]
+}
+
+// Plugin system types
+export interface SpecPlugin {
+  name: string
+  version: string
+  specTypes?: SpecTypeRegistration[]
+  validators?: CustomValidator[]
+  generators?: CustomGenerator[]
+}
+
+export interface SpecTypeRegistration {
+  type: string
+  level: string
+  template?: string
+  validationRules?: TypeValidationRule[]
+}
+
+export interface TypeValidationRule {
+  field: string
+  required: boolean
+  type: 'string' | 'array' | 'object'
+}
+
+export interface CustomValidator {
+  name: string
+  validate: (spec: SpecContract) => ValidationError[] | ValidationWarning[]
+}
+
+export interface CustomGenerator {
+  name: string
+  generate: (options: GenerationOptions) => Promise<string>
 }

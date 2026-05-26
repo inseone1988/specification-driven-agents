@@ -10,6 +10,7 @@ import { createInitCommand } from './cli/init'
 import { createValidateCommand } from './cli/validate'
 import { createResolveCommand } from './cli/resolve'
 import { createValidateProjectCommand } from './cli/validate-project'
+import { createDiffCommand } from './cli/diff'
 
 const program = new Command()
 
@@ -56,6 +57,9 @@ program.addCommand(createGraphCommand())
 // Add the refs command
 import { createRefsCommand } from './cli/refs'
 program.addCommand(createRefsCommand())
+
+// Add the diff command
+program.addCommand(createDiffCommand())
 
 // Default help for unknown commands
 program.on('command:*', () => {
