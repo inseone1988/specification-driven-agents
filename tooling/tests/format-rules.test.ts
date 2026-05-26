@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, afterAll, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, afterAll } from 'vitest'
 import { TemplateLoader } from '../src/generators/template-loader'
 import { SpecGenerator } from '../src/generators/spec-generator'
 import fs from 'fs/promises'
@@ -25,19 +25,16 @@ describe('Format Rules by Specification Type', () => {
   
   afterAll(async () => {
     // Don't clean up - leave test output for inspection
-    // This avoids race conditions with parallel test execution
   })
 
   describe('TemplateLoader format detection', () => {
-  it('should load genesis template as .md', async () => {
-    const content = await templateLoader.loadTemplate('genesis')
-    expect(content).toContain('# {{title}}')
-    expect(content).toContain('## 🎯 Project Vision')
-    // Should not contain YAML structure (except frontmatter)
-    expect(content).toContain('---')  // Should have YAML frontmatter
-    expect(content).toContain('id: {{id}}')
-    expect(content).toContain('type: genesis')
-  })
+    it('should load genesis template as .yaml', async () => {
+      const content = await templateLoader.loadTemplate('genesis')
+      expect(content).toContain('meta:')
+      expect(content).toContain('type: genesis')
+      expect(content).toContain('authority:')
+      expect(content).toContain('purpose:')
+    })
 
     it('should load domain template as .yaml', async () => {
       const content = await templateLoader.loadTemplate('domain')
@@ -68,8 +65,8 @@ describe('Format Rules by Specification Type', () => {
   })
 
   describe('SpecGenerator format output', () => {
-    it('should generate genesis as .md file', async () => {
-      const outputPath = path.join(testOutputDir, 'test-genesis.md')
+    it('should generate genesis as .yaml file', async () => {
+      const outputPath = path.join(testOutputDir, 'test-genesis.yaml')
       
       const result = await specGenerator.generate({
         type: 'genesis',
@@ -78,18 +75,13 @@ describe('Format Rules by Specification Type', () => {
       })
 
       expect(result).toBe(outputPath)
-      expect(result.endsWith('.md')).toBe(true)
+      expect(result.endsWith('.yaml')).toBe(true)
       
       const content = await fs.readFile(outputPath, 'utf-8')
-      expect(content).toContain('# Test Project Genesis Specification')
-      expect(content).toContain('## 🎯 Project Vision')
-      // Check for Genesis ID (allowing for whitespace variations)
-      expect(content.toLowerCase()).toContain('genesis id:')
-      expect(content.toLowerCase()).toContain('genesis-test-project')
-      // Should contain YAML frontmatter
-      expect(content).toContain('---')
-      expect(content).toContain('id: genesis-test-project')
+      expect(content).toContain('meta:')
       expect(content).toContain('type: genesis')
+      expect(content).toContain('id: genesis-test-project')
+      expect(content).toContain('authority:')
     })
 
     it('should generate domain as .yaml file', async () => {
@@ -117,8 +109,8 @@ describe('Format Rules by Specification Type', () => {
         type: 'genesis',
         name: 'my-project'
       })
-      expect(genesisPath.endsWith('.md')).toBe(true)
-      expect(genesisPath).toContain('genesis-my-project.md')
+      expect(genesisPath.endsWith('.yaml')).toBe(true)
+      expect(genesisPath).toContain('genesis-my-project.yaml')
 
       // Test domain default path  
       const domainPath = await specGenerator.generate({
@@ -137,11 +129,9 @@ describe('Format Rules by Specification Type', () => {
       expect(standardPath).toContain('standard-security.yaml')
     })
 
-    it('should validate genesis differently (no YAML validation)', async () => {
-      // This test ensures genesis doesn't go through YAML validation
-      const outputPath = path.join(testOutputDir, 'simple-genesis.md')
+    it('should validate genesis as YAML like all other specs', async () => {
+      const outputPath = path.join(testOutputDir, 'simple-genesis.yaml')
       
-      // Should succeed even though it's not YAML
       const result = await specGenerator.generate({
         type: 'genesis',
         name: 'simple',
@@ -150,7 +140,9 @@ describe('Format Rules by Specification Type', () => {
       
       expect(result).toBe(outputPath)
       const content = await fs.readFile(outputPath, 'utf-8')
-      expect(content.trim().length).toBeGreaterThan(0)
+      expect(content).toContain('meta:')
+      expect(content).toContain('type: genesis')
+      expect(content).toContain('id: genesis-simple')
     })
 
     it('should validate YAML specs for structure', async () => {
@@ -172,18 +164,17 @@ describe('Format Rules by Specification Type', () => {
   })
 
   describe('Format rule enforcement', () => {
-    it('should reject genesis with .yaml extension in template loading', async () => {
-      // TemplateLoader should look for genesis.md, not genesis.yaml
+    it('should load genesis template as .yaml', async () => {
+      // TemplateLoader should look for genesis.yaml
       await expect(templateLoader.loadTemplate('genesis')).resolves.toBeDefined()
-      // Should not find genesis.yaml (we deleted it)
     })
 
-    it('should enforce .md for genesis in default output paths', () => {
+    it('should enforce .yaml for all specs in default output paths', () => {
       // @ts-ignore - accessing private method for testing
       const getDefaultOutputPath = (type: string, name: string) => 
         specGenerator.getDefaultOutputPath(type as any, name)
       
-      expect(getDefaultOutputPath('genesis', 'my-project')).toMatch(/\.md$/)
+      expect(getDefaultOutputPath('genesis', 'my-project')).toMatch(/\.yaml$/)
       expect(getDefaultOutputPath('domain', 'my-domain')).toMatch(/\.yaml$/)
       expect(getDefaultOutputPath('standard', 'my-standard')).toMatch(/\.yaml$/)
       expect(getDefaultOutputPath('api', 'my-api')).toMatch(/\.yaml$/)

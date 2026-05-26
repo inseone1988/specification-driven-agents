@@ -1,0 +1,148 @@
+# Genesis Specification: Product Catalog API
+#
+# The genesis is the root narrative and architectural entry point of a project.
+# It is the highest authority in the specification graph: every other spec
+# inherits from it, and nothing overrides it.
+
+meta:
+  id: genesis-product-catalog-api
+  title: Product Catalog API Genesis
+  type: genesis
+  version: 0.1.0
+  contract_version: 0.1.0
+  compatibility:
+    supported_from: 0.1.0
+    deprecated_after: null
+  status: draft
+  owner: example-author
+  created_at: "2026-05-26"
+  updated_at: "2026-05-26"
+  tags: ["api", "catalog", "products"]
+
+authority:
+  level: genesis
+  inherits_from: []
+  depends_on: []
+  supersedes: []
+  conflicts_with: []
+
+purpose:
+  summary: A REST API for managing product catalogs, designed to be simple, fast, and secure.
+  problem: |
+    Local businesses need a reliable way to manage their product inventory
+    and make it accessible to customers through mobile and web applications.
+  vision: |
+    A clean REST API that provides CRUD operations for products,
+    supports categorization and search, enforces security best practices,
+    and follows consistent naming conventions.
+  design_philosophy:
+    - Simplicity — Simple endpoints, clear contracts
+    - Performance — Response times under 200ms for reads
+    - Security — HTTPS only, JWT authentication, input validation
+    - Consistency — Predictable response formats
+  scope:
+    includes:
+      - Product CRUD (create, read, update, delete)
+      - Category management
+      - Basic search and filtering
+      - Standard error responses
+    excludes:
+      - Inventory management (stock levels)
+      - Order processing
+      - Payment integration
+      - Multi-tenancy
+  non_goals:
+    - Replacing a full ERP system
+    - Real-time inventory tracking
+    - Complex analytics and reporting
+
+context:
+  bounded_context: product-catalog
+  actors:
+    - name: Mobile App User
+      role: Browses products and categories
+    - name: Web Admin
+      role: Manages product catalog
+    - name: API Consumer
+      role: Integrates with external systems
+  capabilities:
+    - Product listing and search
+    - Category browsing
+    - Product detail retrieval
+    - Admin product management
+  constraints:
+    - HTTPS only
+    - JWT Bearer token authentication
+    - Response time < 200ms (p95)
+    - 99.9% uptime target
+
+contracts:
+  invariants:
+    - All endpoints require valid JWT authentication
+    - All responses follow consistent error formats
+    - Product IDs are immutable
+  validations:
+    - Input validation on all write operations
+    - Rate limiting on public endpoints
+    - CORS policies for web clients
+  non_negotiable_rules:
+    - No unauthenticated access to admin endpoints
+    - No raw SQL exposure through API
+    - No PII in public responses
+
+implementation:
+  targets:
+    - src/
+    - docs/
+  affected_paths:
+    - src/routes/**
+    - src/models/**
+    - src/controllers/**
+  generation_mode: manual
+  migration_strategy: safe
+  notes:
+    - Technology stack: Express.js, PostgreSQL
+    - Documentation: OpenAPI 3.0
+
+validation:
+  required_checks:
+    - api_response_time_under_200ms
+    - openapi_documentation_complete
+    - security_vulnerabilities_zero
+  acceptance_criteria:
+    - API response time < 200ms (p95)
+    - 99.9% uptime
+    - Complete OpenAPI documentation
+    - Zero security vulnerabilities
+  traceability_requirements:
+    - all_endpoints_traced_to_domain_specs
+
+agent_directives:
+  required_read_order:
+    - this_genesis
+    - standards/security.yaml
+    - standards/coding.yaml
+    - domains/catalog.yaml
+    - apis/products-api.yaml
+  must:
+    - Follow the specification hierarchy
+    - Respect security standards for all endpoints
+    - Maintain OpenAPI documentation parity
+  must_not:
+    - Bypass authentication requirements
+    - Introduce breaking changes without migration specs
+    - Contradict genesis scope exclusions
+  completion_requirements:
+    - All acceptance criteria met
+    - Security review passed
+    - Documentation updated
+
+history:
+  change_reason: Initial genesis for Product Catalog API example
+  previous_version: null
+  change_type: additive
+  approved_by:
+    - example-author
+  review_ref: null
+  notes:
+    - Created as worked example for SDA framework

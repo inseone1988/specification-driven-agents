@@ -328,6 +328,65 @@ sda status domain-user-management approved
     'utf-8'
   )
 
+  // Create or update agent onboarding files
+  Logger.info('Setting up agent onboarding files...')
+  const sdaSection = `
+## Specification-Driven Agents (SDA)
+
+This project uses the **Specification-Driven Agents** framework.
+All architectural contracts live in the \`specs/\` directory as YAML files.
+
+### Quick Start for Agents
+
+1. **Read the genesis first** — It is the root of the authority graph.
+   \`specs/genesis/project-foundation.yaml\`
+
+2. **Follow the contract graph** — Every spec declares:
+   - \`authority.inherits_from\` → what governs it
+   - \`authority.depends_on\` → what it needs
+   - \`implementation.affected_paths\` → what it changes
+
+3. **Validate as you go** — Run \`sda validate <path>\` before editing specs.
+
+### Reference
+
+- SDA Framework: https://github.com/inseone1988/specification-driven-agents
+- Project config: \`.sda-config.yaml\`
+- All specs: \`specs/**/*.yaml\`
+`
+
+  const agentsPath = path.join(absolutePath, 'AGENTS.md')
+  const claudePath = path.join(absolutePath, 'CLAUDE.md')
+  
+  const agentsExists = await fileExists(agentsPath)
+  const claudeExists = await fileExists(claudePath)
+  
+  if (!agentsExists && !claudeExists) {
+    // Default: create AGENTS.md
+    await fs.writeFile(agentsPath, `# Agent Onboarding — ${name}\n\n${sdaSection}`, 'utf-8')
+    Logger.info('Created AGENTS.md (default agent onboarding file)')
+  } else {
+    // Inject/append SDA section to existing files
+    if (agentsExists) {
+      const existingContent = await fs.readFile(agentsPath, 'utf-8')
+      if (!existingContent.includes('Specification-Driven Agents')) {
+        await fs.writeFile(agentsPath, existingContent + sdaSection, 'utf-8')
+        Logger.info('Updated AGENTS.md with SDA instructions')
+      } else {
+        Logger.info('AGENTS.md already contains SDA instructions')
+      }
+    }
+    if (claudeExists) {
+      const existingContent = await fs.readFile(claudePath, 'utf-8')
+      if (!existingContent.includes('Specification-Driven Agents')) {
+        await fs.writeFile(claudePath, existingContent + sdaSection, 'utf-8')
+        Logger.info('Updated CLAUDE.md with SDA instructions')
+      } else {
+        Logger.info('CLAUDE.md already contains SDA instructions')
+      }
+    }
+  }
+
   // Create .gitignore if not exists
   const gitignorePath = path.join(absolutePath, '.gitignore')
   if (!await fileExists(gitignorePath)) {
@@ -362,6 +421,10 @@ temp/
   Logger.info(`📁 Location: ${absolutePath}`)
   Logger.info(`📄 Configuration: .sda-config.yaml`)
   Logger.info(`📚 Documentation: README.md`)
+  Logger.info(`🤖 Agent Onboarding: ${agentsExists ? 'AGENTS.md (updated)' : 'AGENTS.md (created)'}`)
+  if (claudeExists) {
+    Logger.info(`🤖 Agent Onboarding: CLAUDE.md (updated)`)
+  }
   
   if (!skipExamples) {
     Logger.info(`📋 Examples: specs/genesis/project-foundation.yaml`)

@@ -12,10 +12,10 @@ How do we make sure every team member—and AI agent—understands the API contr
 Follow the specification hierarchy:
 
 ```
-genesis.md → standards/ → domains/ → apis/ → implementations/
-    ↓              ↓            ↓          ↓           ↓
- Vision      Security &     Business   Endpoint    Code that
-             Coding         Domains    Contracts   implements
+genesis.yaml → standards/ → domains/ → apis/ → implementations/
+    ↓               ↓            ↓          ↓           ↓
+ Vision       Security &     Business   Endpoint    Code that
+              Coding         Domains    Contracts   implements
 ```
 
 ## Project Structure
@@ -23,7 +23,7 @@ genesis.md → standards/ → domains/ → apis/ → implementations/
 ```
 api-project/
 ├── specs/
-│   ├── genesis.md              # Project vision
+│   ├── genesis.yaml            # Project vision
 │   ├── standards/
 │   │   ├── security.yaml       # Auth, HTTPS, data protection
 │   │   └── coding.yaml        # Naming conventions, format
@@ -79,7 +79,7 @@ sda graph --all -o mermaid -f graph.md
 
 | Type | File | Purpose |
 |------|------|---------|
-| genesis | `genesis.md` | Project vision and goals |
+| genesis | `genesis.yaml` | Project vision and goals |
 | standard | `standards/security.yaml` | Security requirements |
 | standard | `standards/coding.yaml` | API naming conventions |
 | domain | `domains/catalog.yaml` | Product domain model |

@@ -42,7 +42,7 @@ Prefer specs that are:
 When a specification explicitly references another specification document, prefer `@relative-path` syntax rooted at the spec repository root.
 
 Examples:
-- `@genesis.md`
+- `@genesis.yaml`
 - `@standards/global-standards.spec.yaml`
 - `@domains/event-evidence-domain.spec.yaml`
 
