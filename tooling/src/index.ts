@@ -3,6 +3,7 @@ import pkg from '../package.json' assert { type: 'json' }
 const { version } = pkg
 import figlet from 'figlet'
 import chalk from 'chalk'
+import { Logger } from './utils/logger'
 
 // Import command modules
 import { createGenerateCommand } from './cli/generate'
@@ -12,6 +13,23 @@ import { createResolveCommand } from './cli/resolve'
 import { createValidateProjectCommand } from './cli/validate-project'
 import { createDiffCommand } from './cli/diff'
 import { createGitCommand } from './cli/git'
+import { createPluginCommand } from './cli/plugin'
+
+// Import managers
+import { PluginManager } from './managers/plugin-manager'
+import { TemplateLoader } from './generators/template-loader'
+
+// Initialize plugin discovery
+const pluginManager = new PluginManager()
+const templateLoader = new TemplateLoader()
+
+// Discover plugins and configure template loader
+pluginManager.discoverPlugins().then(() => {
+  templateLoader.setPluginManager(pluginManager)
+  Logger.debug(`Registered spec types: ${pluginManager.getValidSpecTypes().join(', ')}`)
+}).catch(() => {
+  // Silently fail plugin discovery — built-in types still work
+})
 
 const program = new Command()
 
@@ -64,6 +82,9 @@ program.addCommand(createDiffCommand())
 
 // Add the git command
 program.addCommand(createGitCommand())
+
+// Add the plugin command
+program.addCommand(createPluginCommand())
 
 // Default help for unknown commands
 program.on('command:*', () => {

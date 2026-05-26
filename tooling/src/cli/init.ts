@@ -2,6 +2,7 @@ import { Command } from 'commander'
 import fs from 'fs/promises'
 import path from 'path'
 import { Logger } from '../utils/logger'
+import { PluginManager } from '../managers/plugin-manager'
 
 export interface InitOptions {
   force?: boolean
@@ -421,6 +422,12 @@ temp/
   Logger.info(`📁 Location: ${absolutePath}`)
   Logger.info(`📄 Configuration: .sda-config.yaml`)
   Logger.info(`📚 Documentation: README.md`)
+  
+  // Initialize plugin directory
+  Logger.info('Creating plugin directory...')
+  const pluginManager = new PluginManager()
+  await pluginManager.initProjectPlugins(absolutePath)
+  Logger.info('📦 Plugins: .sda/plugins/')
   Logger.info(`🤖 Agent Onboarding: ${agentsExists ? 'AGENTS.md (updated)' : 'AGENTS.md (created)'}`)
   if (claudeExists) {
     Logger.info(`🤖 Agent Onboarding: CLAUDE.md (updated)`)

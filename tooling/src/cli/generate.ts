@@ -1,5 +1,7 @@
 import { Command } from 'commander'
 import { SpecGenerator } from '../generators/spec-generator'
+import { TemplateLoader } from '../generators/template-loader'
+import { PluginManager } from '../managers/plugin-manager'
 import { TemplateEngine } from '../generators/template-engine'
 import { Logger } from '../utils/logger'
 import { SpecType } from '../types'
@@ -16,14 +18,13 @@ export function createGenerateCommand(): Command {
     .option('--preview', 'Preview the generated spec without writing')
     .action(async (type: string, name: string | undefined, options) => {
       try {
-        // Validate type
-        const validTypes: SpecType[] = [
-          'genesis', 'standard', 'domain', 'implementation',
-          'api', 'migration', 'security', 'validation',
-          'operational', 'task-change'
-        ]
+        // Discover plugins and get valid types
+        const pluginManager = new PluginManager()
+        await pluginManager.discoverPlugins()
         
-        if (!validTypes.includes(type as SpecType)) {
+        const validTypes = pluginManager.getValidSpecTypes()
+        
+        if (!validTypes.includes(type)) {
           Logger.error(`Invalid type: ${type}. Valid types are: ${validTypes.join(', ')}`)
           process.exit(1)
         }
