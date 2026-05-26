@@ -1,7 +1,7 @@
-# Task Change Specification: {{title}}
+# Task/Change Specification: {{title}}
 #
-# Task change specifications define focused changes tied to one unit of
-# delivery, such as a bug fix, feature implementation, or refactoring.
+# This specification describes a concrete task, feature implementation,
+# or architectural change. It bridges domain specs with implementation.
 
 meta:
   id: {{id}}
@@ -11,125 +11,113 @@ meta:
   contract_version: 0.1.0
   compatibility:
     supported_from: 0.1.0
-    deprecated_after: null  # Set date when this task-change spec should be deprecated
-  status: draft  # draft | review | approved | implemented | deprecated | archived
+    deprecated_after: null
+  status: draft
   owner: {{owner}}
   created_at: {{date}}
   updated_at: {{date}}
-  tags: []  # e.g., ["bug-fix", "feature", "refactor", "hotfix"]
+  tags: {{#if tags}}
+{{#each tags}}
+    - {{this}}
+{{/each}}
+  {{else}}[]{{/if}}
 
 authority:
   level: task-change
   inherits_from:
-    - genesis
-    - relevant_standards
-    - relevant_domains
-  depends_on: []
+    - {{parent_spec}}
+  depends_on: {{#if dependencies}}
+{{#each dependencies}}
+    - {{this}}
+{{/each}}
+  {{else}}[]{{/if}}
   supersedes: []
   conflicts_with: []
 
 purpose:
   summary: {{summary}}
   problem: |
-    [Describe the specific task or change being implemented]
+    {{problem}}
   scope:
-    includes:
-      - specific implementation task
-      - focused change scope
-      - deliverable definition
-    excludes:
-      - unrelated changes
-      - broad architectural decisions
-      - multiple independent tasks
+    includes: {{#if scope_includes}}
+{{#each scope_includes}}
+      - {{this}}
+{{/each}}
+    {{else}}[]{{/if}}
+    excludes: {{#if scope_excludes}}
+{{#each scope_excludes}}
+      - {{this}}
+{{/each}}
+    {{else}}[]{{/if}}
   non_goals:
-    - [List what this task-change does not cover]
+    - [List what this task explicitly does not cover]
 
 context:
-  bounded_context: task-implementation
-  actors:
-    - developer
-    - reviewer
-    - product-owner
-  capabilities:
-    - implement focused change
-    - deliver specific functionality
-    - maintain code quality
-  constraints:
-    - must be completed within timeframe
-    - must not break existing functionality
-    - must follow established patterns
+  bounded_context: {{bounded_context}}
+  actors: {{#if actors}}
+{{#each actors}}
+    - name: {{name}}
+      role: {{role}}
+{{/each}}
+  {{else}}[]{{/if}}
+  capabilities: {{#if capabilities}}
+{{#each capabilities}}
+    - {{this}}
+{{/each}}
+  {{else}}[]{{/if}}
+  constraints: {{#if constraints}}
+{{#each constraints}}
+    - {{this}}
+{{/each}}
+  {{else}}[]{{/if}}
 
 contracts:
-  invariants:
-    - change must be focused and deliverable
-    - existing functionality must not be broken
-    - code quality must be maintained
-  
-  validations:
-    - scope_validation
-    - quality_validation
-    - integration_validation
-  
-  entities: []
-  commands: []
-  queries: []
-  events: []
-  permissions:
-    - developer_can_implement
-    - reviewer_can_approve
+  invariants: {{#if invariants}}
+{{#each invariants}}
+    - {{this}}
+{{/each}}
+  {{else}}[]{{/if}}
+  validations: {{#if validations}}
+{{#each validations}}
+    - {{this}}
+{{/each}}
+  {{else}}[]{{/if}}
 
 implementation:
-  targets:
-    - [Specific files or modules]
-  affected_paths:
-    - [Paths affected by this change]
-  generation_mode: guided
+  targets: {{#if targets}}
+{{#each targets}}
+    - {{this}}
+{{/each}}
+  {{else}}[]{{/if}}
+  affected_paths: {{#if affected_paths}}
+{{#each affected_paths}}
+    - {{this}}
+{{/each}}
+  {{else}}[]{{/if}}
+  generation_mode: manual
   migration_strategy: safe
-  notes:
-    - This is a focused, deliverable task
+  notes: {{#if notes}}
+{{#each notes}}
+    - {{this}}
+{{/each}}
+  {{else}}[]{{/if}}
 
 validation:
-  required_checks:
-    - scope_compliance
-    - quality_check
-    - integration_check
-  acceptance_criteria:
-    - Task completed as defined
-    - Code quality maintained
-    - Existing functionality preserved
-  test_requirements:
-    - unit_tests
-    - integration_tests
-    - regression_tests
-  traceability_requirements:
-    - link_to_parent_specs
-    - link_to_implementation
-
-agent_directives:
-  required_read_order:
-    - genesis
-    - relevant_standards
-    - relevant_domains
-    - this_task_change_spec
-  must:
-    - Implement focused change only
-    - Maintain code quality
-    - Preserve existing functionality
-  must_not:
-    - Expand scope beyond defined task
-    - Introduce technical debt
-    - Break existing tests
-  completion_requirements:
-    - Task implemented
-    - Tests passing
-    - Code review approved
+  required_checks: {{#if checks}}
+{{#each checks}}
+    - {{this}}
+{{/each}}
+  {{else}}[]{{/if}}
+  acceptance_criteria: {{#if acceptance}}
+{{#each acceptance}}
+    - {{this}}
+{{/each}}
+  {{else}}[]{{/if}}
 
 history:
-  change_reason: initial task-change specification
+  change_reason: {{change_reason | "Initial task specification"}}
   previous_version: null
   change_type: additive
   approved_by:
     - {{owner}}
   review_ref: null
-  notes:
-    - Focused implementation task

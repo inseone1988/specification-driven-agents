@@ -1,5 +1,6 @@
 import yaml from 'js-yaml'
 import { TemplateLoader } from './template-loader'
+import { TemplateEngine, TemplateVariable } from './template-engine'
 import { Logger } from '../utils/logger'
 import { SpecType } from '../types'
 
@@ -9,6 +10,7 @@ export interface GenerationOptions {
   outputPath?: string
   force?: boolean
   values?: Record<string, any>
+  interactive?: boolean  // Enable interactive mode for missing vars
 }
 
 export class SpecGenerator {
@@ -25,7 +27,8 @@ export class SpecGenerator {
       name,
       outputPath,
       force = false,
-      values = {}
+      values = {},
+      interactive = false
     } = options
 
     this.currentType = type
@@ -39,13 +42,38 @@ export class SpecGenerator {
     // Load template
     const template = await this.templateLoader.loadTemplate(type)
     
+    // Create engine and extract variables
+    const engine = new TemplateEngine()
+    const templateVars = engine.extractVariables(template)
+    
     // Prepare values
-    const templateValues = this.prepareValues(type, name, values)
+    const templateValues = this.prepareValues(type, name, values, templateVars)
+    engine.setVariables(templateValues)
+    
+    // Validate variables
+    const validation = engine.validateVariables(templateVars)
+    if (!validation.valid) {
+      const missing = validation.missing.map(v => v.name).join(', ')
+      throw new Error(`Missing required variables: ${missing}`)
+    }
+    
+    // Log warnings about defaults
+    validation.warnings.forEach(w => Logger.warn(w))
     
     // Render template
-    const specContent = this.renderTemplate(template, templateValues)
+    const specContent = engine.render(template)
     
-    // Validate generated spec
+    // Check for errors
+    const errors = engine.getErrors()
+    if (errors.length > 0) {
+      errors.forEach(e => Logger.error(e))
+      throw new Error(`Template rendering failed with ${errors.length} error(s)`)
+    }
+    
+    // Log warnings
+    engine.getWarnings().forEach(w => Logger.warn(w))
+    
+    // Validate generated spec structure
     this.validateGeneratedSpec(specContent)
     
     // Determine output path
@@ -58,25 +86,77 @@ export class SpecGenerator {
     return finalOutputPath
   }
 
-  private prepareValues(type: SpecType, name: string, userValues: Record<string, any>) {
+  /**
+   * Generate a spec with interactive prompts for missing values
+   */
+  async generateInteractive(options: Omit<GenerationOptions, 'interactive'>): Promise<string> {
+    // This would use a prompt library in real implementation
+    // For now, just call regular generate
+    return this.generate({ ...options, interactive: true })
+  }
+
+  private prepareValues(
+    type: SpecType,
+    name: string,
+    userValues: Record<string, any>,
+    templateVars: TemplateVariable[]
+  ): Record<string, any> {
     const now = new Date().toISOString().split('T')[0]
     const id = this.generateId(type, name)
     
-    const defaultValues = {
+    // Build default values based on template requirements
+    const defaultValues: Record<string, any> = {
       id,
       title: this.generateTitle(type, name),
       type,
-      level: type === 'genesis' ? 'genesis' : 
-             type === 'standard' ? 'standard' : 
-             type === 'domain' ? 'domain' : 'implementation',
+      level: this.getAuthorityLevel(type),
       owner: process.env.USER || process.env.USERNAME || 'unknown',
       date: now,
       summary: `[Brief summary of the ${type} specification]`,
       bounded_context: this.generateBoundedContext(type, name),
       ...userValues
     }
+    
+    // Add type-specific defaults
+    switch (type) {
+      case 'domain':
+        defaultValues.entities = []
+        defaultValues.commands = []
+        defaultValues.queries = []
+        defaultValues.events = []
+        break
+      case 'api':
+        defaultValues.endpoints = []
+        defaultValues.methods = []
+        break
+      case 'security':
+        defaultValues.trust_boundaries = []
+        defaultValues.control_requirements = []
+        break
+      case 'task-change':
+        defaultValues.tasks = []
+        defaultValues.acceptance = []
+        break
+    }
 
     return defaultValues
+  }
+
+  private getAuthorityLevel(type: SpecType): string {
+    switch (type) {
+      case 'genesis':
+        return 'genesis'
+      case 'standard':
+        return 'standard'
+      case 'domain':
+        return 'domain'
+      case 'implementation':
+        return 'implementation'
+      case 'task-change':
+        return 'task-change'
+      default:
+        return type
+    }
   }
 
   private generateId(type: SpecType, name: string): string {
@@ -97,22 +177,7 @@ export class SpecGenerator {
     return type
   }
 
-  private renderTemplate(template: string, values: Record<string, any>): string {
-    let rendered = template
-    
-    for (const [key, value] of Object.entries(values)) {
-      const placeholder = `{{${key}}}`
-      rendered = rendered.replace(new RegExp(placeholder, 'g'), String(value))
-    }
-    
-    // Remove any remaining placeholders
-    rendered = rendered.replace(/\{\{[\w]+\}\}/g, '')
-    
-    return rendered
-  }
-
   private validateGeneratedSpec(content: string): void {
-    // All spec types (including genesis) are YAML, validate structure
     try {
       const parsed = yaml.load(content)
       
@@ -120,7 +185,6 @@ export class SpecGenerator {
         throw new Error('Generated spec is not valid YAML')
       }
       
-      // Basic validation
       const spec = parsed as Record<string, any>
       
       if (!spec.meta?.id) {
@@ -129,6 +193,14 @@ export class SpecGenerator {
       
       if (!spec.meta?.type) {
         throw new Error('Generated spec missing meta.type')
+      }
+      
+      // Validate YAML structure completeness
+      const requiredTopLevel = ['meta', 'authority', 'purpose', 'context', 'contracts', 'implementation', 'validation', 'history']
+      const missing = requiredTopLevel.filter(section => !spec[section])
+      
+      if (missing.length > 0) {
+        Logger.warn(`Generated spec missing optional sections: ${missing.join(', ')}`)
       }
       
       Logger.debug('Generated spec passed basic validation')
@@ -151,11 +223,9 @@ export class SpecGenerator {
     const fs = await import('fs/promises')
     const path = await import('path')
     
-    // Create directory if it doesn't exist
     const dir = path.dirname(filePath)
     await fs.mkdir(dir, { recursive: true })
     
-    // Check if file exists
     try {
       await fs.access(filePath)
       
@@ -168,7 +238,6 @@ export class SpecGenerator {
       // File doesn't exist, that's fine
     }
     
-    // Write file
     await fs.writeFile(filePath, content, 'utf-8')
   }
 }
