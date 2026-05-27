@@ -39,18 +39,25 @@ Prefer specs that are:
 
 ## Reference convention
 
-When a specification explicitly references another specification document, prefer `@relative-path` syntax rooted at the spec repository root.
+When a specification explicitly references another specification document, prefer `@spec-id` syntax.
 
-Examples:
-- `@genesis.yaml`
-- `@standards/global-standards.spec.yaml`
-- `@domains/event-evidence-domain.spec.yaml`
+SDA supports 5 reference types:
+
+| Syntax | Type | Example |
+|--------|------|---------|
+| `@spec-id` | Local | `@genesis-project-foundation` |
+| `@spec-id@v1.0` | Versioned | `@standard-coding@v2.1.0` |
+| `@external:./path` | External file | `@external:./shared/auth.yaml` |
+| `@remote:owner/repo` | Remote repo | `@remote:inseone1988/sda-core` |
+| `@project:spec-id` | Cross-project | `@project:other-spec` |
 
 Use this distinction:
-- logical IDs identify the concept or node in the contract graph
+- `id` references identify the concept or node in the contract graph
 - `@relative-path` identifies the physical document to resolve and read
 
-Agents should treat `@relative-path` references as literal document paths before expanding broader search behavior.
+Agents should treat `@spec-id` references as logical graph nodes before expanding to file path resolution.
+
+The `sda refs --validate` command validates that all references resolve correctly.
 
 ## When to expand the read set
 
